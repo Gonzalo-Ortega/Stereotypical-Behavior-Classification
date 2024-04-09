@@ -404,8 +404,8 @@ Breve resumen del Trabajo de Fin de Grado (TFG). Recomendable entre 250-300 pala
 \noindent \textbf{Palabras clave}:
 \begin{compactitem}
     \item Python
-    \item Ciberseguridad
-    \item Aprendizaje automático (pueden ser varias)
+    \item Neurociencia
+    \item Aprendizaje automático
     \item $\ldots$
 \end{compactitem}
 
@@ -485,15 +485,14 @@ Breve resumen del Trabajo de Fin de Grado (TFG). Recomendable entre 250-300 pala
 
 
 % Capítulo 1
-\chapter{Introducción}
+\chapter*{Introducción}
+\addcontentsline{toc}{chapter}{Introducción}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Estilo resto de páginas
 \pagestyle{fancy}
-
-
 % Estilo de párrafo de los capítulos
 \setlength{\parskip}{0.75em}
 \renewcommand{\baselinestretch}{1.25}
@@ -507,39 +506,25 @@ Breve resumen del Trabajo de Fin de Grado (TFG). Recomendable entre 250-300 pala
 
 \input{pages/introduccion.tex}
 
-% \afterpage{\blankpage} % puede generar problema en índice de contenidos
-% \newpage
-
-
-% Capítulo 2
-\chapter{Objetivos}
-
+\chapter*{Objetivos}
+\addcontentsline{toc}{chapter}{Obejetivos}
 \input{pages/objetivos.tex}
 
-\blankpage
+\chapter{Fundamentos teóricos}
+\label{chap:fundamentos-teoricos}
+\input{pages/fundamentos-teoricos.tex}
 
-% Capítulo 3
-\chapter{Contenidos principales}
-\label{chap:contenidos}
+\chapter{Análisis y experimentación}
+\label{chap:analisis-y-experimentacion}
+\input{pages/analisis-y-experimentacion.tex}
 
-\input{pages/contenidos.tex}
-
-
-% Nuevo capítulo
-\chapter{Resultados (opcional)}
+\chapter{Resultados}
 \label{sec:resulObtenidos}
-
 \input{pages/resultados.tex}
 
-\blankpage
-
-% Nuevo capítulo
-
 \chapter{Conclusiones y trabajos futuros}
-
 \input{pages/conclusiones.tex}
 
-\blankpage
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bibliografía %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
