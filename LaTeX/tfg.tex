@@ -365,9 +365,6 @@ upquote=true,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
-
-
 % Estilo de párrafo de los capítulos
 \setlength{\parskip}{0.75em}
 \renewcommand{\baselinestretch}{1.25}
@@ -381,39 +378,20 @@ upquote=true,
 %%%%%%%%%%%%%%%%%%%%%%%%% Agradecimientos o dedicatoria %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter*{Agradecimientos}
-
-Breves agradecimientos o dedicatoria.
-
+\input{pages/agradecimientos.tex}
 \afterpage{\blankpage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Resumen %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter*{Resumen}
-
-Breve resumen del Trabajo de Fin de Grado (TFG). Recomendable entre 250-300 palabras, conteniendo los principales objetivos y resultados derivados del mismo.
-
-\mbox{} \bigskip
-
-\noindent \textbf{Palabras clave}:
-\begin{compactitem}
-    \item Python
-    \item Neurociencia
-    \item Aprendizaje automático
-    \item $\ldots$
-\end{compactitem}
-
+\input{pages/resumen.tex}
 \afterpage{\blankpage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 
 
@@ -576,7 +554,6 @@ Breve resumen del Trabajo de Fin de Grado (TFG). Recomendable entre 250-300 pala
 % Primer apéndice
 \chapter{Este es el primer apéndice}
 \label{sec:apendice}
-
 \input{pages/appendixes/apendice-1.tex}
 
 % Fin del documento
