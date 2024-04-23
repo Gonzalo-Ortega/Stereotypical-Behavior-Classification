@@ -2,12 +2,115 @@
 
 \subsection{DeepLabCut}
 
+% DeepCatLab output
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/deeplabcut-top-example-4128-2020-12-02-1-00-37.jpg}
+    \caption{Salida de video cenital.}
+    \label{fig:deeplabcut-top-example}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/deeplabcut-lateral-example-4128-2020-12-02-1-00-37.jpg}
+    \caption{Salida de video lateral.}
+    \label{fig:deeplabcut-lateral-example}
+  \end{subfigure}
+  \caption{Salida de DeepLabCut del animal 4128 el 02-12-2020, 1:00:37.}
+  \label{fig:deeplabcut-outputexamples}
+\end{figure}
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+  \hline
+    & Nosex & Nosey & Noselikelihood & Headx & Heady & ... \\
+  \hline
+  0 & 136.165344 & 177.722496 & 0.000084 & 129.790253 & 174.772552 & ... \\
+  1 & 162.032005 & 201.444756 & 0.942181 & 168.152061 & 202.420639 & ... \\
+  2 & 156.297043 & 200.326378 & 0.000073 & 162.436028 & 203.156837 & ... \\
+  3 & 155.370415 & 199.043297 & 0.000277 & 159.507599 & 200.199928 & ... \\
+  4 & 149.272644 & 197.677170 & 0.000045 & 155.493912 & 198.814835 & ... \\
+  ... & ... & ... & ... & ... & ... & ... \\
+  \hline
+  \end{tabular}
+  \caption{Extracto del DataFrame de Pandas de los datos sin procesar de DeepLabCut.}
+  \label{tab:df-example}
+\end{table}
+
+% Triangulations
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/triangulation-top-4128-2020-12-02.pdf}
+    \caption{Vista cenital.}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/triangulation-lateral-4128-2020-12-02.pdf}
+    \caption{Vista lateral.}
+  \end{subfigure}
+  \caption{Triangulaciones de los puntos del animal 4128 el 02-12-2020, 1:00:37.}
+  \label{fig:triangulations}
+\end{figure}
+
 \subsection{Filtrado e interpolación}
 
-\subsection{Computo de variables a analizar}
+% Raw trayectory
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/raw-trayectory-top-4128-2020-12-02.pdf}
+    \caption{Vista cenital.}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/raw-trayectory-lateral-4128-2020-12-02.pdf}
+    \caption{Vista lateral.}
+  \end{subfigure}
+  \caption{Trayectoria de un punto de cabeza del animal 4128 el 02-12-2020.}
+  \label{fig:raw-trayectories}
+\end{figure}
 
-\newpage
-\section{Revisión de artículos}
+% Filtered trayectory
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/filtered-trayectory-top-4128-2020-12-02.pdf}
+    \caption{Vista cenital.}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/filtered-trayectory-lateral-4128-2020-12-02.pdf}
+    \caption{Vista lateral.}
+  \end{subfigure}
+  \caption{Trayectoria filtrada de un punto de la cabeza del animal.}
+  \label{fig:filtered-trayectories}
+\end{figure}
+
+% Interpolated trayectory
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/interpolated-trayectory-top-4128-2020-12-02.pdf}
+    \caption{Vista cenital.}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/interpolated-trayectory-lateral-4128-2020-12-02.pdf}
+    \caption{Vista lateral.}
+  \end{subfigure}
+  \caption{Trayectoria interpolada de un punto de la cabeza del animal.}
+  \label{fig:interpolated-trayectories}
+\end{figure}
+
+
+\subsection{Computo de variables a analizar}
 
 \newpage
 \section{Procesado de datos}
@@ -18,7 +121,7 @@
 
 \subsection{Reducción de dimensionalidad para visualización}
 
-\subsection{Entrenamiento de una red neuronal (*por hacer*)}
+\subsection{Entrenamiento de una red neuronal}
 
 
 % \section{Pruebas \LaTeX}
