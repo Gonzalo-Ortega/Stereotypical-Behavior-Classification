@@ -1,3 +1,5 @@
+\chapter{Fundamentos teóricos} \label{chap:fundamentos-teoricos}
+
 \section{Métodos no supervisados}
 
 Los algoritmos de aprendizaje automático no supervisados se utilizan cuando no se conoce la salida esperada. Al algoritmo de aprendizaje se le otorgan los datos de entrada y se le pide extraer información de estos datos. Las principales aplicaciones de estos algoritmos, las cuales vamos a aprovechar, son la agrupación de datos y la reducción de dimensionalidad de las variables de los mismos. Esa última es usada principalmente para poder hacer representaciones de datos multidimensionales, los cuales serian complejos de visualizar de otra forma.
@@ -8,35 +10,16 @@ En esta sección vamos a estudiar a fondo tres tipos de algoritmos de agrupació
 
 Para analizar los diferentes métodos hemos utilizado \texttt{scikit-learn} para generar una muestra sintética de datos bidimensionales agrupados en dos lunas.
 
-\begin{mypython}[float={h},caption={Generación de datos sinteticos.}]
-    X, y = skl.make_moons(n_samples=200,
-                          noise=0.05,
-                          random_state=0)
-    
-    def figure_scatter_data(data, assignment=None):
-      fig = plt.figure(figsize=(5, 5))
-      ax = fig.add_subplot(111)  
-      if assignment is not None:
-        ax.scatter(data[:, 0], data[:, 1], c=assignment, cmap='Pastel1')
-      else:
-        ax.scatter(data[:, 0], data[:, 1], alpha=0.5)
-
-      ax.set_xlabel('X')
-      ax.set_ylabel('Y')  
-
-    figure_scatter_data(X)
-\end{mypython}
-
-En la tabla \ref{tab:colab-links} está el enlace para poder ejecutar el código en el \textit{backend} de Google.
-
 \begin{figure}[h]
-    \centering
+  \centering
 
-    \includegraphics[width=0.5\textwidth]{figures/fake-data.pdf}
-    \caption[Datos artificiales]{Datos artificiales en forma de dos lunas para probar los diferentes tipos de agrupaciones.}
-    \label{fig:fake-data}
+  \includegraphics[width=0.5\textwidth]{figures/fake-data.pdf}
+  \caption[Datos artificiales]{Datos artificiales en forma de dos lunas para probar los diferentes tipos de agrupaciones.}
+  \label{fig:fake-data}
 
 \end{figure}
+
+En la tabla \ref{tab:colab-links} está el enlace para poder ejecutar el código en el \textit{backend} de Google.
 
 \subsection{Agrupamiento por K-medias}
 El algoritmo de k-medias clasifica los datos separando los datos en $n$ grupos de con la misma varianza.

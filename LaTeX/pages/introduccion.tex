@@ -1,3 +1,9 @@
+\chapter{Introducción}
+Este documento recoge el Trabajo de Fin de Grado (TFG) de Gonzalo Ortega Carpintero, incluido en el itinerario del grado en Ingeniería del \textit{Software} de la Universidad Rey Juan Carlos.
+
+En este primer capítulo se presenta la motivación que ha dado lugar a la idea y desarrollo de este TFG en la Sección \ref{sec:motivacion}. En la Sección \ref{sec:objetivos} se introduce el objetivo principal del trabajo y se enumeran los objetivos parciales que se han propuesto para conseguirlo. En la Sección \ref{sec:metodología} se hace un repaso a la metodología seguida para realizar el trabajo y finalmente, en la Sección \ref{sec:herramientas} se introducen las herramientas y bibliotecas que se han utilizado.
+
+\section{Motivación} \label{sec:motivacion}
 
 La Neurociencia es la disciplina científica que estudia el sistema nervioso y todas sus componentes. Para el estudio del funcionamiento del cerebro pueden utilizarse multitud de técnicas diferentes, pero para evitar la intrusión en el sujeto de estudio de muchas de ellas, muchos experimentos e investigaciones se basan en el estudio del comportamiento. Es la etología la encargada de este tipo de estudio en animales y en la cual, históricamente, la categorización de comportamientos dependía fuertemente de la observación manual. Eso ha conllevado siempre una excesiva cantidad de tiempo y las desventajas de los posibles errores de percepción humanos, limitando la cantidad y la calidad de los análisis a realizar.
 
@@ -5,9 +11,29 @@ Gracias a los recientes avances en algoritmos de aprendizaje automático, hoy en
 
 Este Trabajo de Fin de Grado se ha realizado a lo largo de una estancia de prácticas académicas en el Jercog's Team, un equipo de investigación perteneciente al Instituto Cajal, instituto de Neurociencia del Congreso Superior de Investigaciones Científicas. El equipo está centrado en el estudio de la memoria mediante experimentos con ratones, y uno de sus proyectos abiertos consistía en poder elaborar una herramienta para clasificar automáticamente los comportamientos estereotipados de los ratones. Estos son comportamientos cortos, repetitivos y con cierta tendencia a generar patrones, tales como rascarse, caminar en círculos o levantarse a dos patas, ejecutados sin ninguna finalidad, y usualmente inducidos por estar en entornos cerrados y artificiales.
 
+Para la ejecución de uno de sus últimos experimentos utilizan ratones tratados con dimetilnitrosamina (NMDA de sus siglas en inglés, \textit{N-Nitrosodimethylamine}), un compuesto que bloquea la capacidad de los ratones para almacenar memoria a largo plazo. En las sesiones de experimentación los ratones tratados ejercen las mismas tareas que ratones control, tratados con un suero placebo, y en las grabaciones hay ratones de ambos tipos. A ojo de un experimentador, es complejo determinar a ciegas si un ratón está bajo los efectos de NMDA o es control, por lo que es interesante la posibililidad de contar con una herramienta que sea capaz de distinguir unos de otros a partir de los videos de las sesiones.
+
 Durante la estancia se han valorado multitud de técnicas de análisis y procesado de datos, haciendo hincapié en métodos de aprendizaje automático para tratar de completar el proyecto gracias a los últimos avances en computación.
 
-\section{Bibliotecas y herramientas utilizadas}
+\section{Objetivos} \label{sec:objetivos}
+El objetivo principal de este trabajo es utilizar diferentes métodos de aprendizaje automático para clasificar de forma automática comportamientos de animales. Para ello, se han planteado los siguientes objetivos parciales:
+\begin{itemize}
+    \item Realizar una introducción a técnicas de aprendizaje automático aplicables al procesado de datos en el análisis de experimentos con animales.
+    \item Preparar y preprocesar datos provenientes de archivos de video para su posterior análisis.
+    \item Aplicar distintos algoritmos de agrupación para tratar de separar fragmentos de video y clasificarlos en función del comportamiento que esté realizando el animal.
+    \item Tratar de distinguir de forma automática, mediante la clasificación de los comportamientos o de forma directa, si un animal está bajo los efectos de MDMA.
+\end{itemize}
+
+
+\section{Metodología seguida} \label{sec:metodología}
+
+El trabajo se divide en dos capítulos principales, en el Capítulo \ref{chap:fundamentos-teoricos} abordaremos el estudio teórico de ciertos algoritmos de agrupamiento, reducción de dimensionalidad y de clasificación supervisada. Todo ello desde un punto de vista teórico con ejemplos fáciles de visualizar para ayudar al lector a comprender en profundidad los métodos.
+
+En el Capítulo \ref{chap:analisis-y-experimentacion}, desarrollaremos paso a paso el análisis real ejercido durante la estancia en el Instituto Cajal. El principal objetivo durante estos meses ha sido buscar la mejor forma de, dados una serie de videos de ratones en su caja, detectar automáticamente diferentes tipos de comportamientos. El fin último del proyecto es estudiar la posibilidad de clasificar dos grupos de animales, control y medicados, basándose en los comportamientos estereotipados.
+
+Para el preprocesado de los videos se ha utilizado la herramienta DeepLabCut, que mediante el uso de redes neuronales y una relativamente pequeña muestra de entrenamiento computa una estimación de la posición de los animales en cada uno de los fotogramas. Tras el preprocesado haremos una revisión de los artículos científicos que han motivado las diferentes técnicas de agrupamiento que hemos acabado utilizando, y finalizaremos desarrollando cada una de ellas a la par que desglosando el código en Python utilizado en cada apartado.
+
+\section{Bibliotecas y herramientas utilizadas} \label{sec:herramientas}
 
 \subsection*{DeepLabCut}
 DeepLabCut \cite{deeplabcut} es una herramienta para la estimación 2D y 3D sin marcadores mediante el uso de redes neuronales. Es capaz de identificar de rastrear diferentes partes del cuerpo de múltiples especies realizando todo tipo de comportamientos. Esta ha sido la base de todo nuestro trabajo, ya que todos los videos que hemos analizado han sido procesados en primer lugar por DeepLabCut para rastrear las posiciones de múltiples puntos de los animales a lo largo de los videos de las sesiones. Debido a su importancia, damos una explicación más en detalle de su funcionamiento y de como lo hemos utilizado en la sección \ref{sec:DeepLabCut}.
@@ -15,6 +41,7 @@ DeepLabCut \cite{deeplabcut} es una herramienta para la estimación 2D y 3D sin 
 \subsection*{Google Colab}
 Google Colab es una herramienta para realizar cuadernos de Jupyter en línea, y poder ejecutarlos en el \textit{backend} de Google. Estos son documentos que intercalan fragmentos de texto con fragmentos de código ejecutable en Python, así como la salida de las distintas ejecuciones. Todo el codigo realizado para este trabajo ha sido realizado en cuadernos de Colab, y puede ser consultado en los siguientes enlaces:
 
+% Colab links
 \begin{table}[h]
     \centering
     \begin{tabular}{|c|p{10cm}|}
