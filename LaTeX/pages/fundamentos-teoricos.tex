@@ -3,12 +3,13 @@
 En este Capítulo vamos a dar una introducción varios algoritmos de aprendizaje automático.
 
 \section{Métodos no supervisados}
+\label{sec:unsupervised}
 
 Los algoritmos de aprendizaje automático no supervisados se utilizan cuando no se conoce la salida esperada. Al algoritmo de aprendizaje se le otorgan los datos de entrada y se le pide extraer información de estos datos. Las principales aplicaciones de estos algoritmos, las cuales vamos a aprovechar, son la agrupación de datos y la reducción de dimensionalidad de las variables de los mismos. Esa última es usada principalmente para poder hacer representaciones de datos multidimensionales, los cuales serian complejos de visualizar de otra forma.
 
 La principal pega que pueden tener estos algoritmos es que, si bien no siempre son capaces de identificar conocimiento dados los datos utilizados, cuando lo obtienen, no siempre es el conocimiento que esperábamos obtener. Póngase el ejemplo de un algoritmo que tratase de agrupar rostros de personas iguales. Al no darle a priori ningún tipo de salida de ejemplo, el algoritmo puede acabar clasificando si los rostros están de frente o de lado, no precisamente lo que esperábamos. Es por ello que estos algoritmos cuentan con diversidad de parámetros para ajustarlos a nuestras necesidades, tratando de realizar la agrupación deseada.
 
-En esta sección vamos a estudiar a fondo tres tipos de algoritmos de agrupación: el agrupamiento por k-medias, la agrupación aglomerada, y la agrupación por afinidad. Además, estudiaremos también el principal algoritmo de reducción de dimensiones, el análisis de componentes principales, PCA, de sus siglas en inglés. Los principales ejemplos y explicaciones de los algoritmos han sido inspirados por los dados en el libro \cite[Introduction to Machine Learning with Python]{machine}.
+En esta sección vamos a estudiar a fondo tres tipos de algoritmos de agrupación: el agrupamiento por k-medias, la agrupación aglomerada, y la agrupación por afinidad. Además, estudiaremos también el principal algoritmo de reducción de dimensiones, el análisis de componentes principales, PCA, de sus siglas en inglés. Los principales ejemplos y explicaciones de los algoritmos han sido inspirados por los dados en \cite{machine}.
 
 \begin{mypython}[float={h},caption={Generar datos artificiales de prueba.}]
   from sklearn.datasets import make_blobs
@@ -79,7 +80,7 @@ En la tabla \ref{tab:colab-links} está el enlace para poder ejecutar el código
     \caption{}
     \label{fig:pca-labeled}
   \end{subfigure}
-  \caption[Probando un PCA.]{\ref{fig:pca-color-ponderation} Mapa de calor con las ponderaciones asignadas por el PCA a cada uno de las dimensiones originales. \ref{fig:pca-3d-labeled} Visualización de los datos previamente generados tras escalarlos y aplicarles la PCA. Los colores de los grupos se mantienen, pero los ejes ahora representan las componentes principales, en vez de las dimensiones originales. \ref{fig:pca-labeled} Visualización de las dos primeras componentes principales sobre el plano. Este será el formato en el que visualizaremos más adelante las agrupaciones ejercidas sobre datos reales de dimensionalidad alta.}
+  \caption[Prueba del algoritmo de PCA.]{Prueba del algoritmo de PCA. \ref{fig:pca-color-ponderation} Mapa de calor con las ponderaciones asignadas por el PCA a cada uno de las dimensiones originales. \ref{fig:pca-3d-labeled} Visualización de los datos previamente generados tras escalarlos y aplicarles la PCA. Los colores de los grupos se mantienen, pero los ejes ahora representan las componentes principales, en vez de las dimensiones originales. \ref{fig:pca-labeled} Visualización de las dos primeras componentes principales sobre el plano. Este será el formato en el que visualizaremos más adelante las agrupaciones ejercidas sobre datos reales de dimensionalidad alta.}
   \label{fig:pca}
 \end{figure}
 
@@ -121,7 +122,7 @@ El algoritmo finaliza cuando una iteración no realice ninguna modificación de 
     \caption{}
     \label{fig:kmeans-pca}
   \end{subfigure}
-  \caption[Prueba del algoritmo de k-medias.]{\ref{fig:kmeans-3d} Visualización sobre los datos sin modificar de los grupos que ha realizado el algoritmo de k-medias. \ref{fig:kmeans-pca} Visualización de los grupos realizados sobre los datos procesados por el PCA.}
+  \caption[Prueba del algoritmo de k-medias.]{Prueba del algoritmo de k-medias. \ref{fig:kmeans-3d} Visualización sobre los datos sin modificar de los grupos que ha realizado el algoritmo de k-medias. \ref{fig:kmeans-pca} Visualización de los grupos realizados sobre los datos procesados por el PCA.}
   \label{fig:kmeans}
 \end{figure}
 
@@ -192,5 +193,9 @@ El algoritmo de propagación de afinidad crea agrupaciones mandando mensajes ent
 \section{Métodos supervisados}
 (POR HACER)
 
-\cite[Deep Learning with PyTorch]{pytorch}
+\cite{pytorch}
 \subsection{Red neuronal}
+
+\subsubsection*{Red secuencial}
+
+\subsubsection*{Red convolucional}
