@@ -7,7 +7,7 @@ En la Sección \ref{sec:preprocesado} tratamos como hemos preprocesado los video
 
 \section{Preprocesado de datos} \label{sec:preprocesado}
 
-Los datos de los que hemos partido para realizar el análisis han sido 88 pares de videos en blanco y negro, de unos cinco minutos cada uno, de ratones en su caja sin estar realizando ninguna tarea concreta. Cada par de videos consistía en un video de la vista cenital de la caja y otro de la vista lateral, como se puede observar en la Figura \ref{fig:deeplabcut-outputexamples}. Además, de cada par de videos teníamos el código del animal que estaba siendo grabado, la fecha de la sesión y si el animal estaba bajo los efectos del tratamiento de NDMA en dicha fecha o no. Mostramos un resumen de estos datos en la Tabla \ref{tab:animal-info}.
+Los datos de los que hemos partido para realizar el análisis han sido 88 pares de videos en blanco y negro, de unos cinco minutos cada uno, de ratones en su caja sin estar realizando ninguna tarea concreta. Cada par de videos consistía en un video de la vista cenital de la caja y otro de la vista lateral, como se puede observar en la Figura \ref{fig:deeplabcut-outputexamples}. Además, de cada par de videos teníamos el código del animal que estaba siendo grabado, la fecha de la sesión y si el animal estaba bajo los efectos del tratamiento de NMDA en dicha fecha o no. Mostramos un resumen de estos datos en la Tabla \ref{tab:animal-info}.
 
 % Animal info
 \begin{table}[h]
@@ -31,10 +31,6 @@ Los datos de los que hemos partido para realizar el análisis han sido 88 pares 
 \end{table}
 
 Para tratar de averiguar de forma automática el tipo de tratamiento de cada sesión, podríamos entrenar una red neuronal utilizando directamente los videos como datos de entrenamiento. Sin embargo, no contamos con una cantidad muy elevada de videos para entrenar, y además esto no nos daría ninguna pista sobre como comportamientos concretos se relacionan con el tratamiento. Al no contar con una base de datos de fragmentos de videos clasificados según el comportamiento del animal, tampoco podemos entrenar una red para distinguir estos comportamientos sin tener que pasar antes por un seguramente tedioso periodo de etiquetado manual de fragmentos. Por ello, hemos hecho uso de la herramienta DeepLabCut para rastrear la posición del ratón en cada fotograma y así poder hacer cálculos sobre ella, y trabajar con otros algoritmos de agrupación no supervisada para tratar de clasificar diferentes movimientos del ratón a lo largo del video.
-
-\subsection{DeepLabCut}\label{sec:DeepLabCut}
-
-(EXPLICACIÓN DEEPLABCUT)
 
 % DeepLabCut output
 \begin{figure}[p]
@@ -68,6 +64,44 @@ Para tratar de averiguar de forma automática el tipo de tratamiento de cada ses
 
   \label{fig:deeplabcut-outputexamples}
 \end{figure}
+
+\subsection{DeepLabCut}\label{sec:DeepLabCut}
+DeepLabCut es una red convolucional profunda que combina redes residuales pre entrenadas con capas deconvolucionales. Una red residual es aquella que concatena cientos de capas convolucionales, entrenadas en este caso con la base de datos de ImageNet, y las capas deconvolucionales amplían la información visual para producir densidades de probabilidad espaciales. Esto hace que ajustar DeepLabCut para realizar una tarea concreta conlleve únicamente entrenar una red utilizando pocos datos de entrenamiento para obtener un listado de coordenadas de los puntos deseados acompañadas de la verosimilitud de cada uno de los puntos predichos.
+
+En el código \ref{code:dcl-dataset} podemos observar como hemos inicializado nuestros conjuntos de datos de entrenamiento para procesar los vieos de las sesiones. Hemos realizado este proceso para los videos cenitales y laterales independientemente, indicando para cada uno de ellos los puntos que queremos rastrear en el fichero de configuración de \texttt{path\_config\_file}. Hemos utilizado también la red residual de 50 capas \texttt{resnet\_50} pre-entrenada por DeepLabCut y seleccionado el método de aumentación de los datos de las capas deconvolucionales \texttt{imgaug}.
+
+\begin{mypython}[caption={Crear datos de entrenamiento de DeepLabCut.}, label={code:dcl-dataset}]
+import deeplabcut
+
+deeplabcut.create_training_dataset(path_config_file, 
+                                   net_type='resnet_50',
+                                   augmenter_type='imgaug')
+\end{mypython}
+
+Tras crear los datos de entrenamiento y etiquetar manualmente 50 fotogramas hemos utilizado el código \ref{code:dcl-train} para entrenar la red.
+
+\begin{mypython}[caption={Entrenar la red de DeepLabCut.}, label={code:dcl-train}]
+deeplabcut.train_network(path_config_file,
+                         shuffle=1,
+                         trainingsetindex=0,
+                         max_snapshots_to_keep=5,
+                         displayiters=10,
+                         saveiters=250,
+                         maxiters=1000,
+                         allow_growth=False,
+                         autotune=False,
+                         keepdeconvweights=True)
+\end{mypython}
+
+Tras entrenar la red la evaluamos para verificar que tenemos un error aceptable con el Código \ref{code:dcl-eval}.
+
+\begin{mypython}[caption={Evaluar la red de DeepLabCut.}, label={code:dcl-eval}]
+deeplabcut.evaluate_network(path_config_file)
+\end{mypython}
+
+Una vez entrenada la red, analizamos los videos con \texttt{deeplabcut.analyze\_videos} obteniendo un fichero \texttt{h5} para cada una de las sesiónes con las cordenadas de todos los puntos rastreados y la verosimilitud de cada uno de los puntos. En la Tabla \ref{tab:df-example} mostramos un fragmento de uno de los ficheros cargado a memoria en un \texttt{DataFrame} para su posterior preprocesado y análisis.
+
+Finalmente, utilizando la función \texttt{deeplabcut.create\_labeled\_video} hemos creado dos videos de muestra con los puntos rastrados dibujados sobre cada uno de los fotogramas del video como se puede observar en la Figura \ref{fig:deeplabcut-outputexamples}.
 
 % Dataframe example
 \begin{table}[h]
@@ -142,7 +176,6 @@ Una vez hemos pasado todos los videos por DeepLabCut, tenemos dos ficheros de da
 
 %(FINALIZAR SECCIÓN e INCLUIR FIGURAS)
 
-\newpage
 \section{Análisis de datos} \label{sec:análisis}
 
 \subsection{Clasificación manual de comportamientos.}
@@ -185,7 +218,7 @@ Estos métodos de extracción de comportamientos funcionan para este caso partic
 
 Sin embargo, para el cómputo manual de estas propiedades se han puesto umbrales arbitrarios para definir el estado del animal. Un umbral de 3 píxeles por segundo sobre la media de los puntos de la espalda para determinar cuando el animal se está desplazando, un umbral de ±30° para determinar si el animal está girando o no, o un umbral de 5 fotogramas fuera de las dimensiones de la caja para determinar si el animal se está alzando sobre una pared. Los umbrales son necesarios si consideramos necesario discretizar estas variables continuas en comportamientos cualitativos, pero están a su vez sesgados por el juicio del experimentador, ya que una varianza en la magnitud de los umbrales o en el conjunto de puntos utilizados para calcularlos puede resultar en una discrepancia de la clasificación obtenida.
 
-La clasificación manual hace que sea complejo determinar también cuando el animal realiza algún comportamiento más complejo que los vistos hasta ahora, ya que si no sabemos de antemano la relación entre las coordenadas de las partes del animal y el comportamiento, no podremos identificarlo. De la misma forma, al no conocer de antemano la relación entre los diferentes comportamientos y el tipo de tratamiento dado a los animales, con estas clasificaciones no se podrán diferenciar animales tratados con anticuerpos de NDMA de animales control.
+La clasificación manual hace que sea complejo determinar también cuando el animal realiza algún comportamiento más complejo que los vistos hasta ahora, ya que si no sabemos de antemano la relación entre las coordenadas de las partes del animal y el comportamiento, no podremos identificarlo. De la misma forma, al no conocer de antemano la relación entre los diferentes comportamientos y el tipo de tratamiento dado a los animales, con estas clasificaciones no se podrán diferenciar animales tratados con anticuerpos de NMDA de animales control.
 
 Esto motiva las siguientes secciones en las cuales hemos utilizado diversos métodos de aprendizaje automático para tratar de conseguir clasificaciones sin depender de sesgos preestablecidos.
 
@@ -252,42 +285,77 @@ Para conseguir realizar esta clasificación habría que computar otras caracter�
 %\subsection{Agrupaciones incluyendo más variables computadas.}
 %(Mismo proceso que en la sección anterior pero ahora incluyendo más variables además de la trayectoria, como velocidades, aceleración, ángulos...)
 
-\newpage
 \subsection{Agrupaciones supervisadas.}
 
-Para aproximar una función que relaccióne 
+Para aproximar una función que relacione las coordenadas de los puntos rastreados por DeepCutLab con el estado de los animales en cada sesión de video, hemos realizado una red neuronal con dos capas convolucionales para relacionar propiedades comunes de fotogramas próximos en el tiempo, y con otras dos capas lineales para asociar las propiedades encontradas con una de las dos clases que queremos diferenciar: animales con tratamiento control o en los cuales el tratamiento de anticuerpos de NMDA aún no está haciendo efecto, y tratamientos que están bajo los efectos del tratamiento de anticuerpos NMDA.
 
-\begin{mypython}[float={h}, caption=Red secuencial]
-model = nn.Sequential(
-          nn.Linear(52*1200, 1024),
-          nn.Tanh(),
-          nn.Linear(1024, 512),
-          nn.Tanh(),
-          nn.Linear(512, 128),
-          nn.Tanh(),
-          nn.Linear(128, 2)).to(device=device)
+Las redes convolucionales son usadas generalmente para el tratamiento de imágenes haciendo convoluciones bidimensionales, como por ejemplo en las redes de DeepCutLab. Como nuestros datos tienen una estructura de serie temporal, hemos realizado convoluciones unidimensionales con las capas \texttt{nn.Conv1d} de PyTorch. En datos de imágenes la convolución obtiene propiedades de píxeles próximos, en las series temporales se obtienen propiedades de momentos temporales próximos, fotogramas en nuestro caso.
+
+Para preparar nuestros datos para entrenar y validar nuestra red hemos creado una subclase del tipo \texttt{Dataset} de PyTorch en la cual introducimos los \texttt{DataFrame} con los datos de las sesiones y las etiquetas de cada una de ellas para almacenarlas juntas y tener asociados los datos cada sesión con su etiqueta correspondiente. Podemos ver la implementación de esta clase en el Código \ref{code:dataset}. Al almacenar los datos también los normalizamos con el \texttt{StandardScaler} de Scikit-learn para facilitar la optimización de las funciones de la red. Además, hemos subdividido cada sesión de 5 minutos en fragmentos de un minuto para ampliar la cantidad de nuestros datos de prueba. Esto supone pasar de tener sesiones de 6000 fotogramas a sesiones de 1200, reduciendo a su vez la dimensión de cada uno de los puntos. Por contra, esto supone adaptar nuestra hipótesis a que va a que el periodo de tiempo de un minuto es suficiente para detectar patrones que puedan indicar el estado del tratamiento de un animal.
+
+% Dataset
+\begin{mypython}[float={h}, caption=\texttt{Dataset} de las sesiones, label={code:dataset}]
+class SessionDataset(Dataset):
+  def __init__(self, dataframes, labels):
+    self.data = dataframes
+    self.labels = np.array(labels)
+    
+    # Fit the scaler on the entire dataset
+    self.scaler = StandardScaler()
+    self.scaler.fit(np.concatenate(self.data))  
+
+  def __len__(self):
+    return len(self.data)
+
+  def __getitem__(self, idx):
+    # Convert dataframe to numpy array
+    data = self.data[idx].values 
+
+    # Normalize the data
+    data = self.scaler.transform(data)
+
+    label = self.labels[idx]
+    data_tensor = torch.tensor(data, dtype=torch.float)
+    return data_tensor.permute(1, 0), label
+
+dataset = SessionDataset(split_dfs,
+                         split_animal_info['real-assigment'])
 \end{mypython}
 
-\begin{mypython}[float={h}, caption=Red convolucional]
+En el Código \ref{code:convolutional} podemos ver la implementación en PyTorch de la red que hemos diseñado. Cuenta con un total de cuatro capas, dos convolucionales y dos lineales. La primera capa convolucional cuenta con una 52 canales de entrada, uno por cada coordenada de un fotograma. Su núcleo de tamaño 20 hace que al recorrer los 1200 fotogramas se asocien como próximos en grupos de 20, buscando estructuras de comportamiento de hasta un segundo. La capa tiene 104 salidas, duplicando el tamaño de los datos antes de introducirlos en la siguiente capa. Hemos utilizado una función de activación \texttt{relu} siguiendo los estándares de la mayoría a de redes de clasificación y hemos reducido la dimensionalidad de los datos en 2 antes de pasar los datos a la siguiente capa mediante la función \texttt{max\_pool\_1d}.
+
+La segunda capa de nuestra red es otra convolucional que ahora reduce el número de canales de 104 a 26 con el mismo núcleo que la capa anterior, y volviendo a usar la misma función de activación y de reducción de dimensionalidad. Tras aplicar estas dos capas convolucionales nos quedan datos de 26 canales respecto a los 52 originales y 300 puntos, respecto a los 1200 con los que empezamos.
+
+Finalmente aplicamos dos capas lineales como en las redes secuenciales tradicionales para transformar la salida de las capas convolucionales primero de 26 * 300 dimensiones a 32, y finalmente de esas 32 a 2 para determinar, para cada minuto de sesión, una de las dos clasificaciones que buscamos.
+
+% Network
+\begin{mypython}[float={h}, caption=Red convolucional, label={code:convolutional}]
+import torch.nn.functional as F
+
 class TimeSeriesNet(nn.Module):
   def __init__(self):
-      super().__init__()
-      self.conv1 = nn.Conv1d(in_channels=52, out_channels=104, kernel_size=3, padding=1)
-      self.conv2 = nn.Conv1d(in_channels=104, out_channels=8, kernel_size=3, padding=1)
-      self.fc1 = nn.Linear(2400, 32)
-      self.fc2 = nn.Linear(32, 2)
+    super().__init__()
+    self.conv1 = nn.Conv1d(in_channels=52, out_channels=104,
+                           kernel_size=20, padding=10)
+    self.conv2 = nn.Conv1d(in_channels=104, out_channels=26,
+                           kernel_size=20, padding=10)
+    self.fc1 = nn.Linear(26 * 300, 32)
+    self.fc2 = nn.Linear(32, 2)
 
   def forward(self, x):
-      # Input shape: (batch_size, channels, sequence_length)
-      # Max pooling with kernel size 2
-      out = F.max_pool1d(torch.tanh(self.conv1(x)), 2)  
-      # Max pooling with kernel size 2
-      out = F.max_pool1d(torch.tanh(self.conv2(out)), 2)
-      # Reshape for fully connected layer
-      out = out.view(-1, 2400)  
-      out = F.tanh(self.fc1(out))
-      out = self.fc2(out)
-      return out
+    # Input shape: (batch_size, channels, sequence_length)
 
-model = TimeSeriesNet()
+    # Max pooling with kernel size 2
+    out = F.max_pool1d(F.relu(self.conv1(x)), 2)  
+    out = F.max_pool1d(F.relu(self.conv2(out)), 2)
+
+    # Flatten for fully connected layer
+    out = out.view(out.size(0), -1)  
+    out = F.relu(self.fc1(out))
+    out = self.fc2(out)
+    return out
 \end{mypython}
+
+Para entrenar y validar nuestra red, obteniendo una medida estadísticamente robusta de la precisión de la misma, hemos utilizado un método de validación cruzada, separando nuestros datos en cinco grupos aleatorizados con un 20\% de los fragmentos de sesiones cada uno. Así, hemos entrenado cinco modelos de la misma red, cada uno con un 80\% de los datos, dejando en cada caso un 20\% de los datos diferente para realizar la validación. En el Apéndice \ref{apen:salida-conv} hemos trascrito la salida del entrenamiento de los diferentes modelos observando que se obtienen precisiones que oscilan entre el 46 y 71\% de tasa de acierto, con una media final del 58,27\%, un porcentaje no muy superior al de realizar una asignación de clases aleatoria.
+
+Esta baja precisión puede estar causada por diversos factores, entre los cuales pueden estar la poca cantidad de datos de entrenamiento, el uso de una red demasiado genérica y poco adaptada al problema, o la posibilidad de que no exista una relación entre las coordenadas de los puntos rastreados de las partes del animal y el estado del tratamiento del mismo.
