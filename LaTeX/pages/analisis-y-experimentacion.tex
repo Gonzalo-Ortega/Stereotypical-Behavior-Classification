@@ -3,11 +3,11 @@
 
 Una vez adquiridos los conocimientos teóricos necesarios, y comprendido el funcionamiento de los diferentes algoritmos que vamos a utilizar, estamos en disposición de aplicarlos a los datos de experimentación y comprobar la eficacia de los algoritmos en un caso real. Este capítulo aborda el trabajo realizado durante tres meses en el Instituto Cajal, aplicando diferentes técnicas para tratar de agrupar los comportamientos de los animales, y de diferenciar animales bajo efectos de tratamiento o de placebo.
 
-En la Sección \ref{sec:preprocesado} tratamos como hemos preprocesado los videos para homogeneizar todas las sesiones de experimentación, obtener los datos de posición de los animales en ellas y filtrar e interpolar los datos poco verosímiles. En la Sección \ref{sec:análisis} desarrollamos el proceso de análisis de los datos preprocesados aplicando los diferentes algoritmos vistos anteriormente y analizando sus resultados.
+En la Sección \ref{sec:preprocesado} tratamos el proceso de como hemos preprocesado los videos para homogeneizar todas las sesiones de experimentación, obtener los datos de posición de los animales en ellas y filtrar e interpolar los datos poco verosímiles. En la Sección \ref{sec:análisis} desarrollamos el proceso de análisis de los datos preprocesados aplicando los diferentes algoritmos vistos anteriormente y analizando sus resultados.
 
 \section{Preprocesado de datos} \label{sec:preprocesado}
 
-Los datos de los que hemos partido para realizar el análisis han sido 88 pares de videos en blanco y negro, de unos cinco minutos cada uno, de ratones en su caja sin estar realizando ninguna tarea concreta. Cada par de videos consistía en un video de la vista cenital de la caja y otro de la vista lateral, como se puede observar en la Figura \ref{fig:deeplabcut-outputexamples}. Además, de cada par de videos teníamos el código del animal que estaba siendo grabado, la fecha de la sesión y si el animal estaba bajo los efectos del tratamiento de NMDA en dicha fecha o no. Mostramos un resumen de estos datos en la Tabla \ref{tab:animal-info}.
+Los datos de los que hemos partido para realizar el análisis han sido 88 pares de videos en blanco y negro, de cinco minutos cada uno, de ratones en su caja habitad sin estar realizando ninguna tarea concreta. Cada par de videos consistía en un video de la vista cenital de la caja y otro de la vista lateral, como se puede observar en la Figura \ref{fig:deeplabcut-outputexamples}. Además, de cada par de videos teníamos el código del animal que estaba siendo grabado, la fecha de la sesión y si el animal estaba bajo los efectos del tratamiento de NMDA en dicha fecha o no. Mostramos un resumen de estos datos en la Tabla \ref{tab:animal-info}.
 
 % Animal info
 \begin{table}[h]
@@ -26,11 +26,11 @@ Los datos de los que hemos partido para realizar el análisis han sido 88 pares 
     83 & 4089	& 2020-09-24	& NMDA	\\
     \hline
   \end{tabular}
-  \caption[Datos de las sesiones]{Fragmento del \texttt{DataFrame} que almacenaba los datos de las sesiones, incluyendo el número del video según se almacenaban en memoria, el código del animal, la fecha de la sesión y el estado del tratamiento.}
+  \caption[Datos de las sesiones]{Fragmento del \texttt{DataFrame} que almacena los datos de las sesiones, incluyendo el número del video, el código del animal, la fecha de la sesión y el estado del tratamiento.}
   \label{tab:animal-info}
 \end{table}
 
-Para tratar de averiguar de forma automática el tipo de tratamiento de cada sesión, podríamos entrenar una red neuronal utilizando directamente los videos como datos de entrenamiento. Sin embargo, no contamos con una cantidad muy elevada de videos para entrenar, y además esto no nos daría ninguna pista sobre como comportamientos concretos se relacionan con el tratamiento. Al no contar con una base de datos de fragmentos de videos clasificados según el comportamiento del animal, tampoco podemos entrenar una red para distinguir estos comportamientos sin tener que pasar antes por un seguramente tedioso periodo de etiquetado manual de fragmentos. Por ello, hemos hecho uso de la herramienta DeepLabCut para rastrear la posición del ratón en cada fotograma y así poder hacer cálculos sobre ella, y trabajar con otros algoritmos de agrupación no supervisada para tratar de clasificar diferentes movimientos del ratón a lo largo del video.
+Para tratar de averiguar de forma automática el tipo de tratamiento de cada sesión, podríamos entrenar una red neuronal utilizando directamente los videos como datos de entrenamiento. Sin embargo, no contamos con una cantidad muy elevada de videos para entrenar, y además esto no nos daría ninguna pista sobre como comportamientos concretos se relacionan con el tratamiento. Al no contar con una base de datos de fragmentos de videos clasificados según el comportamiento del animal, tampoco podemos entrenar una red para distinguir estos comportamientos. Por ello, hemos hecho uso de la herramienta DeepLabCut para rastrear la posición y la postura del ratón en cada fotograma y así poder hacer cálculos sobre ella, trabajar con otros algoritmos de agrupación no supervisada para  clasificar diferentes movimientos del ratón a lo largo del video, o tener datos independientes del entorno con los que poder entrenar otras redes neuronales para distinguir el estado del tratamiento de cada animal.
 
 % DeepLabCut output
 \begin{figure}[p]
@@ -78,7 +78,7 @@ deeplabcut.create_training_dataset(path_config_file,
                                    augmenter_type='imgaug')
 \end{mypython}
 
-Tras crear los datos de entrenamiento y etiquetar manualmente 50 fotogramas hemos utilizado el código \ref{code:dcl-train} para entrenar la red.
+Tras crear los datos de entrenamiento, en el laboratorio se habían etiquetado manualmente 10 fotogramas por sesión, los cuales hemos utilizado en el código \ref{code:dcl-train} para entrenar la red.
 
 \begin{mypython}[caption={Entrenar la red de DeepLabCut.}, label={code:dcl-train}]
 deeplabcut.train_network(path_config_file,
@@ -101,7 +101,7 @@ deeplabcut.evaluate_network(path_config_file)
 
 Una vez entrenada la red, analizamos los videos con \texttt{deeplabcut.analyze\_videos} obteniendo un fichero \texttt{h5} para cada una de las sesiónes con las cordenadas de todos los puntos rastreados y la verosimilitud de cada uno de los puntos. En la Tabla \ref{tab:df-example} mostramos un fragmento de uno de los ficheros cargado a memoria en un \texttt{DataFrame} para su posterior preprocesado y análisis.
 
-Finalmente, utilizando la función \texttt{deeplabcut.create\_labeled\_video} hemos creado dos videos de muestra con los puntos rastrados dibujados sobre cada uno de los fotogramas del video como se puede observar en la Figura \ref{fig:deeplabcut-outputexamples}.
+Finalmente, utilizando la función \texttt{deeplabcut.create\_labeled\_video} hemos creado dos videos de muestra con los puntos rastreados dibujados sobre cada uno de los fotogramas del video como se puede observar en la Figura \ref{fig:deeplabcut-outputexamples}.
 
 % Dataframe example
 \begin{table}[h]
@@ -123,8 +123,7 @@ Finalmente, utilizando la función \texttt{deeplabcut.create\_labeled\_video} he
 \end{table}
 
 \subsection{Filtrado e interpolación}
-Una vez hemos pasado todos los videos por DeepLabCut, tenemos dos ficheros de datos para cada uno de las sesiones, uno para las coordenadas de los puntos de la vista cenital y otro para las coordenadas de los puntos de la vista lateral. Al cargar los ficheros a memoria como \texttt{DataFrames} de \texttt{pandas}, vemos que no todos ellos tienen la misma duración, por lo que los homogeneizamos todos eliminando los datos de los últimos fotogramas, consiguiendo que cada \texttt{DataFrame} tenga un tamaño de 6000 filas, lo que equivale a 6000 fotogramas o 5 minutos de video. Además, eliminamos los datos de 4 videos que no llegan a esa duración, ya que son videos con problemas que entorpecerían el análisis. Finalmente, eliminamos los datos de 2 videos más, ya que tras el preprocesado seguían teniendo valores nulos debido a que DeepLabCut no ha podido identificar varios de los puntos a rastrear en ninguno de los fotogramas de los videos.
-
+Una vez hemos pasado todos los videos por DeepLabCut, tenemos dos ficheros de datos para cada uno de las sesiones, uno para las coordenadas de los puntos de la vista cenital y otro para las coordenadas de los puntos de la vista lateral. Al cargar los ficheros a memoria como \texttt{DataFrames} de \texttt{pandas}, observamos que no todos ellos tienen la misma duración, por lo que los homogeneizamos todos eliminando los datos de los últimos fotogramas, consiguiendo que cada \texttt{DataFrame} tenga un tamaño de 6000 filas, lo que equivale a 6000 fotogramas o 5 minutos de video. Además, eliminamos los datos de 4 videos que no llegan a esa duración, ya que son videos con problemas que entorpecerían el análisis. Finalmente, eliminamos los datos de 2 videos más, ya que tras el preprocesado seguían teniendo valores nulos debido a que DeepLabCut no ha podido identificar varios de los puntos a rastrear en ninguno de los fotogramas de los videos.
 
 % Trayectory prerpocessing
 \begin{figure}[p]
@@ -178,7 +177,7 @@ Una vez hemos pasado todos los videos por DeepLabCut, tenemos dos ficheros de da
 
 \section{Análisis de datos} \label{sec:análisis}
 
-\subsection{Clasificación manual de comportamientos.}
+\subsection{Clasificación manual de comportamientos}
 Gracias a los datos de DeepLabCut podemos tratar de identificar ciertos comportamientos de forma manual, especificando ciertos umbrales para extraer los comportamientos deseados. A modo de ejemplo, hemos calculado cuando el punto de la cabeza en la vista cenital, \texttt{head}, se salía durante un intervalo de cinco fotogramas fuera de los límites establecidos de la caja. Así, como se observa en la Figura \ref{fig:rearing}, hemos identificado los intervalos de tiempo de cada sesión en los cuales el animal se alza sobre sus extremidades traseras apoyándose en la pared de la caja.
 
 % Rearing frames
@@ -222,10 +221,10 @@ La clasificación manual hace que sea complejo determinar también cuando el ani
 
 Esto motiva las siguientes secciones en las cuales hemos utilizado diversos métodos de aprendizaje automático para tratar de conseguir clasificaciones sin depender de sesgos preestablecidos.
 
-\subsection{Agrupaciones no supervisadas.}
-Para tratar de automatizar el proceso de clasificación, sin depender de cualidades computadas \textit{ad hoc} para este conjunto de datos, hemos realizado los algoritmos vistos en la sección \ref{sec:unsupervised} sobre los datos de las trayectorias preprocesados según hemos visto en la sección \ref{sec:preprocesado}.
+\subsection{Agrupaciones no supervisadas}
+Para tratar de automatizar el proceso de clasificación, sin depender de cualidades computadas \textit{ad hoc} para este conjunto de datos, hemos aplicado los algoritmos vistos en la sección \ref{sec:unsupervised} sobre los datos de las trayectorias preprocesados según hemos visto en la sección \ref{sec:preprocesado}.
 
-Para clasificar los comportamientos de un animal en cada sesión no contamos con datos previamente clasificados por lo que no podemos hacer uso de métodos de aprendizaje automático supervisados. Además, si no queremos introducir un sesgo en la clasificación, tampoco sabemos de antemano en cuantos grupos de comportamiento similares podremos agrupar los diferentes fragmentos de cada sesión de video. Por ello hemos utilizado un algoritmo de propagación de afinidad, basándonos en el trabajo realizado en \cite{neuron}, con el cual podemos realizar una agrupación de intervalos de tiempo en función de su afinidad. Pese a todo ello, hay que introducir un pequeño sesgo en el proceso, determinando arbitrariamente la longitud de los intervalos de tiempo que queremos clasificar. Hemos dividido los videos de las sesiones en intervalos de 5 segundos e introducido los datos de las coordenadas de todos los puntos de las vistas cenital y lateral para todos los puntos de cada fotograma de los intervalos. En la Figura \ref{fig:unsupervied-behav} se muestra la agrupación obtenida para la sesión de uno de los animales, consiguiendo agrupar los distintos intervalos en 7 grupos de comportamiento.
+Para clasificar los comportamientos de un animal en cada sesión no contamos con datos previamente clasificados por lo que no podemos hacer uso de métodos de aprendizaje automático supervisados. Además, si no queremos introducir un sesgo en la clasificación, tampoco sabemos de antemano en cuantos grupos de comportamiento similares podremos agrupar los diferentes fragmentos de cada sesión de video. Por ello hemos utilizado un algoritmo de propagación de afinidad, basándonos en el trabajo realizado por A. Klaus et al. \cite{neuron}, con el cual podemos realizar una agrupación de intervalos de tiempo en función de su afinidad. Pese a todo ello, hay que introducir un pequeño sesgo en el proceso, determinando arbitrariamente la longitud de los intervalos de tiempo que queremos clasificar. Hemos dividido los videos de las sesiones en intervalos de 5 segundos e introducido los datos de las coordenadas de todos los puntos de las vistas cenital y lateral para todos los puntos de cada fotograma de los intervalos. En la Figura \ref{fig:unsupervied-behav} se muestra la agrupación obtenida para la sesión de uno de los animales, consiguiendo agrupar los distintos intervalos en 7 grupos de comportamiento.
 
 % Behav aff
 \begin{figure}[h]
@@ -246,7 +245,7 @@ Para clasificar los comportamientos de un animal en cada sesión no contamos con
   \label{fig:unsupervied-behav}
 \end{figure}
 
-Para diferenciar el tipo de tratamiento de cada una de las sesiones utilizando los datos de DeepLabCut mediante algoritmos no supervisados, no podemos usar el algoritmo de propagación de afinidad, ya que no es posible garantizar que vaya a generar dos únicas clases. Por ello, hemos utilizado los otros dos algoritmos explicados en la sección \ref{sec:unsupervised}: la agrupación por k-medias y la agrupación aglomerativa, ambos utilizados en estudios similares \cite{frontiers}. Para ambos casos hemos tomado los datos de todas las sesiones y tras aplicarles el algoritmo hemos mostrado los resultados en la Figura \ref{fig:unsupervied-treatment}. Con ninguno de los dos algoritmos hemos conseguido resultados significativamente mejores que los que obtendríamos haciendo asignaciones aleatorias de las clases, con lo que podemos asumir que no hay ninguna relación directa entre la posición de los animales y el tipo de tratamiento que se les ha suministrado.
+Para diferenciar el tipo de tratamiento de cada una de las sesiones utilizando los datos de DeepLabCut mediante algoritmos no supervisados, no podemos usar el algoritmo de propagación de afinidad, ya que no es posible garantizar que vaya a generar dos únicas clases. Por ello, hemos utilizado los otros dos algoritmos explicados en la sección \ref{sec:unsupervised}: la agrupación por k-medias y la agrupación aglomerativa, ambos utilizados en estudios similares \cite{frontiers}. Para ambos casos hemos tomado los datos de todas las sesiones y tras aplicarles el algoritmo hemos mostrado los resultados en la Figura \ref{fig:unsupervied-treatment}. Con ninguno de los dos algoritmos hemos conseguido resultados significativamente mejores que los que obtendríamos haciendo asignaciones aleatorias de las clases, por lo que no podemos asegurar que exista alguna relación directa entre la posición de los animales y el tipo de tratamiento que se les ha suministrado.
 
 Para conseguir realizar esta clasificación habría que computar otras características manualmente con las que dar más información a los algoritmos, cambiar los puntos rastreados por DeepCutLab para conseguir información sobre otras partes del animal, o tratar de predecir una función desconocida que fuera capaz de agrupar las sesiones correctamente. Como tenemos los datos de todas las sesiones podemos entrenar métodos supervisados, y estamos en las condiciones idóneas para tratar de predecir, en caso de que exista, esa función que relacione las coordenadas de los puntos que hemos rastreado con el tipo de tratamiento de cada sesión.
 
@@ -285,7 +284,7 @@ Para conseguir realizar esta clasificación habría que computar otras caracter�
 %\subsection{Agrupaciones incluyendo más variables computadas.}
 %(Mismo proceso que en la sección anterior pero ahora incluyendo más variables además de la trayectoria, como velocidades, aceleración, ángulos...)
 
-\subsection{Agrupaciones supervisadas.}
+\subsection{Agrupaciones supervisadas}
 
 Para aproximar una función que relacione las coordenadas de los puntos rastreados por DeepCutLab con el estado de los animales en cada sesión de video, hemos realizado una red neuronal con dos capas convolucionales para relacionar propiedades comunes de fotogramas próximos en el tiempo, y con otras dos capas lineales para asociar las propiedades encontradas con una de las dos clases que queremos diferenciar: animales con tratamiento control o en los cuales el tratamiento de anticuerpos de NMDA aún no está haciendo efecto, y tratamientos que están bajo los efectos del tratamiento de anticuerpos NMDA.
 
