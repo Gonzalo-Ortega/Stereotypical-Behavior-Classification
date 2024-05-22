@@ -5,6 +5,50 @@ Una vez adquiridos los conocimientos teóricos necesarios, y comprendido el func
 
 En la Sección \ref{sec:preprocesado} tratamos el proceso de como hemos preprocesado los videos para homogeneizar todas las sesiones de experimentación, obtener los datos de posición de los animales en ellas y filtrar e interpolar los datos poco verosímiles. En la Sección \ref{sec:análisis} desarrollamos el proceso de análisis de los datos preprocesados aplicando los diferentes algoritmos vistos anteriormente y analizando sus resultados.
 
+\newpage
+\section{Bibliotecas y herramientas utilizadas} \label{sec:herramientas}
+
+\subsection*{DeepLabCut}
+DeepLabCut \cite{deeplabcut} es una herramienta para la estimación 2D y 3D sin marcadores mediante el uso de redes neuronales. Es capaz de identificar de rastrear diferentes partes del cuerpo de múltiples especies realizando todo tipo de comportamientos. Esta ha sido la base de todo nuestro trabajo, ya que todos los videos que hemos analizado han sido procesados en primer lugar por DeepLabCut para rastrear las posiciones de múltiples puntos de los animales a lo largo de los videos de las sesiones. Debido a su importancia, damos una explicación más en detalle de su funcionamiento y de como lo hemos utilizado en la sección \ref{sec:DeepLabCut}.
+
+\subsection*{Google Colab}
+Google Colab es una herramienta para realizar cuadernos de Jupyter en línea, y poder ejecutarlos en el \textit{backend} de Google. Estos son documentos que intercalan fragmentos de texto con fragmentos de código ejecutable en Python, así como la salida de las distintas ejecuciones. Todo el codigo realizado para este trabajo ha sido realizado en cuadernos de Colab, y puede ser consultado en los siguientes enlaces:
+
+% Colab links
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|p{10cm}|}
+        \hline
+        \textbf{Ejemplos teóricos} & \href{https://colab.research.google.com/drive/
+        1qLLQTCFLZcqExN7qyYyRAT1nm7P8NhuK?usp=sharing}{https://colab.research.google.com/drive/ 1qLLQTCFLZcqExN7qyYyRAT1nm7P8NhuK?usp=sharing} \\
+        \hline
+        \textbf{DeepCutLab} & \href{https://colab.research.google.com/drive/1dFbmUcfW9el50v0RBCkLIItTD6SF7A3x?usp=sharing}{https://colab.research.google.com/drive/
+        1dFbmUcfW9el50v0RBCkLIItTD6SF7A3x?usp=sharing} \\
+        \hline
+        \textbf{Análisis principal} & \href{https://colab.research.google.com/drive/
+        1ak2VpDi-zTnV-uEDp-viEkpa8GFDGuBR?usp=sharing}{https://colab.research.google.com/drive/ 1ak2VpDi-zTnV-uEDp-viEkpa8GFDGuBR?usp=sharing} \\
+        \hline
+    \end{tabular}
+    \caption{Enlaces a cuadernos de Google Colab.}
+    \label{tab:colab-links}
+\end{table}
+
+\newpage
+\subsection*{Scikit-learn}
+Scikit-learn \cite{scikit-learn} es una biblioteca de código abierto de Python que contiene numerosas implementaciones de algoritmos de aprendizaje automático. Hemos usado dichas implementaciones tanto como para la explicación teórica de los algoritmos, como para el análisis real de los datos de los animales.
+
+\subsection*{Pandas}
+Pandas es una biblioteca de manejo de datos mediante tablas denominadas \texttt{DataFrame}. Todos los datos que hemos cargado para ser analizados los hemos guardado como \texttt{DataFrames} para poder tener un fácil acceso a todos ellos y a sus variables pudiendo, además, visualizarlos de una forma sencilla.
+
+\subsection*{NumPy}
+NumPy es una de las bibliotecas principales de cálculo científico en Python. Proporciona un objeto de \texttt{array} multidimensional y numerosas funciones estadísticas y algebraicas de mucha utilidad.
+
+\subsection*{PyTorch}
+PyTorch \cite{pytorch-paper} es una biblioteca de Python desarrollada por Facebook para la implementación de redes neuronales. Incluye multitud de módulos que facilitan la creación de redes neuronales a medida y varios optimizadores para acelerar el proceso de entrenamiento. Además, proporciona el objeto \texttt{Tensor} similar al \texttt{array} de NumPy, pero optimizado para el cómputo en procesadores gráficos. Hemos utilizado todas estas herramientas para implementar una red neuronal para analizar nuestros datos de laboratório.
+
+\subsection*{Matplotlib}
+Matplotlib es una biblioteca para crear figuras en Python. Todas las figuras de representación de datos que aparecen en este trabajo han sido creadas con \texttt{matplotlib}. El código concreto utilizado para generarlas puede consultarse en los cuadernos de Colab.
+
 \section{Preprocesado de datos} \label{sec:preprocesado}
 
 Los datos de los que hemos partido para realizar el análisis han sido 88 pares de videos en blanco y negro, de cinco minutos cada uno, de ratones en su caja habitad sin estar realizando ninguna tarea concreta. Cada par de videos consistía en un video de la vista cenital de la caja y otro de la vista lateral, como se puede observar en la Figura \ref{fig:deeplabcut-outputexamples}. Además, de cada par de videos teníamos el código del animal que estaba siendo grabado, la fecha de la sesión y si el animal estaba bajo los efectos del tratamiento de NMDA en dicha fecha o no. Mostramos un resumen de estos datos en la Tabla \ref{tab:animal-info}.
@@ -224,7 +268,7 @@ Esto motiva las siguientes secciones en las cuales hemos utilizado diversos mét
 \subsection{Agrupaciones no supervisadas}
 Para tratar de automatizar el proceso de clasificación, sin depender de cualidades computadas \textit{ad hoc} para este conjunto de datos, hemos aplicado los algoritmos vistos en la sección \ref{sec:unsupervised} sobre los datos de las trayectorias preprocesados según hemos visto en la sección \ref{sec:preprocesado}.
 
-Para clasificar los comportamientos de un animal en cada sesión no contamos con datos previamente clasificados por lo que no podemos hacer uso de métodos de aprendizaje automático supervisados. Además, si no queremos introducir un sesgo en la clasificación, tampoco sabemos de antemano en cuantos grupos de comportamiento similares podremos agrupar los diferentes fragmentos de cada sesión de video. Por ello hemos utilizado un algoritmo de propagación de afinidad, basándonos en el trabajo realizado por A. Klaus et al. \cite{neuron}, con el cual podemos realizar una agrupación de intervalos de tiempo en función de su afinidad. Pese a todo ello, hay que introducir un pequeño sesgo en el proceso, determinando arbitrariamente la longitud de los intervalos de tiempo que queremos clasificar. Hemos dividido los videos de las sesiones en intervalos de 5 segundos e introducido los datos de las coordenadas de todos los puntos de las vistas cenital y lateral para todos los puntos de cada fotograma de los intervalos. En la Figura \ref{fig:unsupervied-behav} se muestra la agrupación obtenida para la sesión de uno de los animales, consiguiendo agrupar los distintos intervalos en 7 grupos de comportamiento.
+Para clasificar los comportamientos de un animal en cada sesión no contamos ejemplos de comportamientos identificados y previamente clasificados por lo que no podemos hacer uso de métodos de aprendizaje automático supervisados. Además, si no queremos introducir un sesgo en la clasificación, tampoco sabemos de antemano en cuantos grupos de comportamiento similares podremos agrupar los diferentes fragmentos de cada sesión de video. Por ello hemos utilizado un algoritmo de propagación de afinidad, basándonos en el trabajo realizado por A. Klaus et al. \cite{neuron}. Dicho algoritmo nos permite agrupar fragmentos de comportamiento función de su afinidad. Pese a todo ello, hay que introducir un pequeño sesgo en el proceso, determinando arbitrariamente la longitud de los intervalos de tiempo que queremos clasificar. Hemos dividido los videos de las sesiones en intervalos de 5 segundos e introducido los datos de las coordenadas de todos los puntos de las vistas cenital y lateral para todos los puntos de cada fotograma de los intervalos. En la Figura \ref{fig:unsupervied-behav} se muestra la agrupación obtenida para la sesión de uno de los animales, consiguiendo agrupar los distintos intervalos en 7 grupos de comportamiento.
 
 % Behav aff
 \begin{figure}[h]
@@ -286,7 +330,7 @@ Para conseguir realizar esta clasificación habría que computar otras caracter�
 
 \subsection{Agrupaciones supervisadas}
 
-Para aproximar una función que relacione las coordenadas de los puntos rastreados por DeepCutLab con el estado de los animales en cada sesión de video, hemos realizado una red neuronal con dos capas convolucionales para relacionar propiedades comunes de fotogramas próximos en el tiempo, y con otras dos capas lineales para asociar las propiedades encontradas con una de las dos clases que queremos diferenciar: animales con tratamiento control o en los cuales el tratamiento de anticuerpos de NMDA aún no está haciendo efecto, y tratamientos que están bajo los efectos del tratamiento de anticuerpos NMDA.
+Para aproximar una función que relacione las coordenadas de los puntos rastreados por DeepCutLab con el estado de los animales en cada sesión de video, hemos realizado una red neuronal con dos capas convolucionales para relacionar propiedades comunes de fotogramas próximos en el tiempo, y con otras dos capas lineales para asociar las propiedades encontradas con una de las dos clases que queremos diferenciar: animales con tratamiento control o previos al tratamiento con anticuerpos anti NMDA, y animales que están bajo los efectos del tratamiento de anticuerpos NMDA.
 
 Las redes convolucionales son usadas generalmente para el tratamiento de imágenes haciendo convoluciones bidimensionales, como por ejemplo en las redes de DeepCutLab. Como nuestros datos tienen una estructura de serie temporal, hemos realizado convoluciones unidimensionales con las capas \texttt{nn.Conv1d} de PyTorch. En datos de imágenes la convolución obtiene propiedades de píxeles próximos, en las series temporales se obtienen propiedades de momentos temporales próximos, fotogramas en nuestro caso.
 

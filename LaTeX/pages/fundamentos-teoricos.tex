@@ -127,7 +127,7 @@ Para computar el algoritmo sobre nuestros datos artificiales hemos utilizado el 
   from sklearn.cluster import KMeans
 
   kmeans = KMeans(n_clusters=2, n_init="auto")
-  kmeans_assigment = kmeans.fit_predict(Z)
+  kmeans_assigment = kmeans.fit_predict(X)
 \end{mypython}
 
 La Figura \ref{fig:kmeans} muestra las dos agrupaciones que se han decidido crear sobre los datos artificiales, simulando lo que más adelante haremos con los datos reales.
@@ -174,7 +174,7 @@ Tras ello, unifica los dos grupos que supongan un menor incremento en la varianz
   from sklearn.cluster import AgglomerativeClustering
 
   agg = AgglomerativeClustering()
-  agg_assigment = agg.fit_predict(Z)
+  agg_assigment = agg.fit_predict(X)
 \end{mypython}
 
 En el Código \ref{code:agglomerative} hemos realizado un agrupamiento aglomerado sobre nuestros puntos artificiales utilizando la clase \texttt{AgglomerativeClustering} de Scikit-learn, que por defecto, si no se le indica lo contrario, utiliza el Método de Ward en la ejecución del algoritmo. En la Figura \ref{fig:agglomerative} se muestran los resultados sobre nuestros datos de forma gráfica.
@@ -263,33 +263,149 @@ En el Código \ref{code:aff} hemos utilizado la clase \texttt{AffinityPropagatio
 
 Al contrario que los métodos de aprendizaje automático no supervisados, donde no sabemos de antemano la salida deseada, los métodos de aprendizaje automático supervisados permiten calibrar los modelos utilizando los datos de salida que queremos mediante el uso de datos de entrenamiento de los cuales conocemos su salida esperada. Para métodos de agrupamiento y separación de clases como los que nos interesan en este trabajo, basta con contar con un conjunto de datos previamente etiquetado con su clase real como datos de entrenamiento, permitiendo a los modelos aprender sobre la clasificación dada y posteriormente replicarla para datos nuevos.
 
-\cite{pytorch}
+En el laboratorio contamos con datos de sesiones etiquetadas con el estado del tratamiento de los animales, por lo que pueden servir para entrenar un método supervisado. En esta sección, contamos con los datos artificiales que hemos generado, en los cuales cada punto tiene asignado uno de cuatro grupos diferentes.
+
+Existen multitud de métodos no supervisados, sin embargo vamos a centrarnos únicamente en el que más está siendo utilizado a día de hoy, dando buenos resultados en múltiples disciplinas para todo tipo de problemas: las redes neuronales. En esta sección vamos a introducir primero el ejemplo fundamental de redes neuronales, las redes neuronales secuenciales, para luego hablar de las redes neuronales convolucionales, que serán las que finalmente apliquemos a nuestros datos reales. Los ejemplos y explicaciones se basan en los de \cite{understanding} y \cite{pytorch}.
 
 \subsection{Red neuronal secuencial}
 
+Antes de profundizar en el concepto de red, es necesario definir las piezas por las cuales están formadas, las \textit{neuronas artificiales}. Una neurona es una función que recibe un vector de entradas $ \mathbf{x} = (x_1, ..., x_n) $ y asigna un peso a cada una de ellas, representados mediante un vector de pesos $ \mathbf{w} = (w_1, ..., w_n) $, mediante una combinación lineal, sumando además un sesgo $ b $,
+\begin{equation}
+  z = \sum_{i=1}^n w_i x_i + b = \mathbf{w} \cdot \mathbf{x} + b.
+\end{equation}
+
+El resultado de esta combinación lineal pasa después por una función de activación $ \varphi(z) $ que lo filtra antes de obtener la salida final de la neurona
+\begin{equation}
+  y = \varphi(\mathbf{w} \cdot \mathbf{x} + b).
+\end{equation}
+
+La función de activación $ \varphi $ varía en función del problema que se quiera tratar y del diseño de la red. Algunos de los ejemplos más comunes son la tangente hiperbólica (tanh)
+\begin{equation}
+  \varphi(z) = \operatorname{tanh}(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}},
+\end{equation}
+la cual vamos a usar en las pruebas de esta sección, o el rectificador linear unitario (ReLu),
+\begin{equation}
+  \varphi(z) = \operatorname{max}(0, z),
+\end{equation}
+el cual es ampliamente utilizado por sus buenos resultados en problemas generales, y hemos utilizado en la Sección \ref{sec:unsupervised} con nuestros datos reales.
+
+Una vez definido el concepto de neurona podemos definir una red \textit{neuronal secuencial completa} como un conjunto de neuronas divididas en diferentes capas. En la primera capa, la \textit{capa de entrada}, cada neurona recibe como entrada todos los datos a procesar y manda su salida a la entrada de cada una de las neuronas de la siguiente capa. En las capas intermedias, \textit{capas ocultas}, las neuronas reciben un vector de entrada formado por las salidas de la capa anterior, y vuelven a pasar su salida a las capas posteriores. Finalmente, la última capa, la \textit{capa de salida}, recibe su entrada de la capa anterior y devuelve la salida final de la red. En función del número de neuronas de esta capa, la red podrá devolver más o menos información.
+
+Para clasificar datos mediante una red neuronal es necesario contar con un conjunto de datos etiquetado dividido en un conjunto de entrenamiento y otro conjunto de validación, para poder así \textit{entrenar} nuestra red y validar la calidad de su aprendizaje. Así, se empieza inicializando los valores de los pesos de la red a valores predeterminados, y luego se empiezan a propagar hacia delante los datos de entrenamiento calculando el error $ L $ cometido al clasificarlos comparando la salida de la red con el valor de su clasificación real
+\begin{equation}
+  L = \frac{1}{m} \sum_{i=1}^{m}(y_i - \hat{y}_i)^2,
+\end{equation}
+donde $ m $ es el número de neuronas de la capa de salida y $ \hat{y}_i $ es la salida esperada en cada una de esas neuronas para cada vector de entrada propagado hacia delante.
+
+El siguiente paso es propagar el error hacia detrás calculando el error relativo cometido por cada una de las neuronas, para poder así modificar sus pesos y sesgos. Se calcula el gradiente de $ L $ calculando la derivada parcial de $ L $ respecto a cada uno de los pesos $ \mathbf{w} $ y el sesgo $ b $ y se actualizan los parámetros introduciendo un \textit{ratio de aprendizaje} $ \alpha $. Denotando $ \phi \in \{\text{pesos y sesgos}\} $ a cualquiera de los parámetros de las distintas neuronas, tenemos que en cada iteración cada parámetro $ \phi $ se actualiza
+\begin{equation}
+  \phi \leftarrow \phi - \alpha \cdot \frac{\partial L}{\partial \phi}.
+\end{equation}
+Este proceso se repite hasta obtener un error aceptable y dar por concluido el entrenamiento de la red. Después, se comprueba su eficacia y su capacidad de aprendizaje y adaptación a casos nuevos verificando su comportamiento con los datos reservados para la validación.
+
+Para implementar una red neuronal de estas características utilizando PyTorch, en el Código \ref{code:dataset} hemos creado una clase heredada del objeto \texttt{Dataset} de PyTorch, en la cual almacenamos nuestros datos y sus respectivas clases a la vez, accediendo a los datos en formato de \texttt{tensor}, el tipo de dato de PyTorch optimizado para operaciones en GPU.
+
+\begin{mypython}[float={h}, caption={\texttt{Dataset} de los datos artificiales.}, label={code:dataset}]
+from torchvision import torch
+from torch.utils.data import Dataset
+
+class RawDataset(Dataset):
+  def __init__(self, arr, labels):
+      self.data = arr
+      self.labels = labels
+
+  def __len__(self):
+      return len(self.data)
+
+  def __getitem__(self, idx):
+      data = self.data[idx]
+      label = self.labels[idx]
+      return torch.tensor(data, dtype=torch.float), label
+
+dataset = RawDataset(X, y)
+\end{mypython}
+
+Para inicializar nuestros datos de entrenamiento y validación, en el Código \ref{code:train-val-data} utilizamos la función \texttt{random\_split}, que se encarga de distribuir nuestros puntos de forma aleatoria en los distintos subconjuntos. Además, fijamos el tamaño de los lotes que vamos a pasar a la red durante el entrenamiento, antes de actualizar los parámetros minimizando la función de pérdida, e inicializamos dos \texttt{DataLoader} que se encargaran de seleccionar aleatoriamente y en el tamaño de lote seleccionado, datos para pasar a la red tanto en el entrenamiento como en la validación.
+
+\begin{mypython}[float={h}, caption={Inicialización de los conjuntos de entrenamiento y validación.}, label={code:train-val-data}]
+from torch.utils.data import DataLoader, random_split
+
+train_size = int(0.8 * len(dataset))
+test_size = len(dataset) - train_size 
+
+train_dataset, test_dataset = \
+  random_split(dataset, [train_size, test_size])
+
+batch_size = 3
+train_loader = DataLoader(train_dataset,
+                          batch_size=batch_size,
+                          shuffle=True)
+test_loader = DataLoader(test_dataset,
+                         batch_size=batch_size, 
+                         shuffle=False)
+\end{mypython}
+
+Finalmente, en el Código \ref{code:model} inicializamos nuestra red con dos capas lineales y una función de activación \texttt{Tanh} entre medias. La primera capa tiene 3 entradas, una por cada variable de los puntos artificiales y un número arbitrario de 128 salidas. Tras pasar por la función de activación, la segunda capa recibe esas 128 salidas de la capa anterior como sus entradas y saca 4 salidas, una por cada grupo que queremos distinguir.
+
+Posteriormente se escogen una función de pérdida y un optimizador de entre los proporcionados por PyTorch, y se fijan la tasa de aprendizaje y el número de iteraciones que se quieren realizar.
+
+Una vez todos los componentes están listos, se itera en el bucle principal tantas veces como se desee ejecutando los pasos de entrenamiento explicados previamente. En la Figura \ref{fig:net-artificial} se observan los resultados de la validación, observando que esta red básica es suficiente para clasificar todos los dato de validación correctamente.
+
+\begin{mypython}[float={h}, caption={Modelo de la red y enrenamiento con los datos artificiales.}, label={code:model}]
+import torch.nn as nn
+
+model = nn.Sequential(
+  nn.Linear(3, 128),
+  nn.Tanh(),
+  nn.Linear(128, 4))
+
+loss_fn = nn.CrossEntropyLoss()
+learning_rate = 1e-2
+optimizer = torch.optim.SGD(model.parameters(),     
+                            lr=learning_rate)
+n_epochs = 100
+
+for epoch in range(n_epochs):
+  for sessions, labels in train_loader:
+    batch_size = sessions.shape[0]
+    outputs = model(sessions.view(batch_size, -1))
+
+    loss = loss_fn(outputs, labels)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+  
+  print("Epoch: %d, Loss: %f" % (epoch, float(loss)))
+\end{mypython}
+
 % Net
-\begin{figure}[h]
+\begin{figure}[p]
   \centering
   \begin{subfigure}{0.45\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/train-asig-artificial.pdf}
     \caption{}
-    \label{fig:}
+    \label{fig:train-artificial}
   \end{subfigure}
   \begin{subfigure}{0.45\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/test-artificial.pdf}
     \caption{}
-    \label{fig:}
+    \label{fig:test-artificial}
   \end{subfigure}
   \begin{subfigure}{0.45\textwidth}
     \centering
     \includegraphics[width=\textwidth]{figures/test-asig-artificial.pdf}
     \caption{}
-    \label{fig:}
+    \label{fig:net-class-artificial}
   \end{subfigure}
-  \caption[Prueba de red neuronal secuencial.]{}
-  \label{fig:}
+  \caption[Prueba de red neuronal secuencial.]{Prueba de clasificación mediante una red neuronal secuencial. \ref{fig:train-artificial}: Subconjunto de entrenamiento de los datos artificiales. Generado seleccionando 80 puntos de forma aleatoria manteniendo la información del grupo al que pertenecen para realizar el entrenamiento de nuestra red secuencial. \ref{fig:test-artificial}: Subconjunto de validación de los datos artificiales. Formado por los 20 puntos restantes que no se han seleccionado para el subconjunto de entrenamiento. Se guarda la información de sus grupos originales, pero no se le pasa a la red, para así obtener una clasificación automática y poder posteriormente verificar los resultados. \ref{fig:net-class-artificial}: Clasificación de los datos de validación generada por la red. Acierta el grupo real de los 20 puntos con los que se ha verificado su comportamiento.}
+  \label{fig:net-artificial}
 \end{figure}
 
 \subsection{Red neuronal convolucional}
+Para resolver problemas simples como la clasificación de los puntos artificiales con los que hemos estado trabajando, las redes neuronales secuenciales lineales como la que hemos visto funcionan perfectamente, sin embargo, a la hora de analizar datos reales no siempre consiguen los resultados que nos gustaría. Para arreglar esto se puede valorar aumentar el número de capas de la red, aumentar el tamaño de las capas, probar diferentes funciones de activación, o aumentar el número de datos de entrenamiento. Otra posible opción es probar con redes que funcionen algo diferente como, por ejemplo, las redes neuronales convolucionales.
+
+Las redes secuenciales relacionan cada punto del vector de entrada con todos los demás \texttt{asumiendo} que pueden existir relaciones entre cualquier par de puntos. Las redes convolucionales, en cambio, incorporan capas encargadas de aplicar una serie de filtros sobre los datos para asociar y dar relevancia a puntos próximos entre sí. Las redes convolucionales son ampliamente utilizadas para el análisis de imágenes, ya que es frecuente que las estructuras y características que podamos querer buscar en una imagen, estén formadas por píxeles próximos entre sí. En nuestro caso, vamos a analizar datos en series temporales, por lo que de la misma forma, es probable que las estructuras que queremos encontrar estén próximas temporalmente.
+
+No vamos a centrarnos a fondo en los detalles matemáticos de estas redes, pero en la Sección \ref{sec:unsupervised} vamos a implementar una red convolucional a medida para nuestros datos de laboratorio utilizando PyTorch.
