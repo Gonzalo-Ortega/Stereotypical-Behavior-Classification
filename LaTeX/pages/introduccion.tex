@@ -4,7 +4,7 @@
 
 Este documento recoge el Trabajo de Fin de Grado (TFG) de Gonzalo Ortega Carpintero, incluido en el itinerario del grado en Ingeniería del \textit{Software} de la Universidad Rey Juan Carlos.
 
-En este primer capítulo se presenta la motivación que ha dado lugar a la idea y desarrollo de este TFG en la Sección \ref{sec:motivacion}. En la Sección \ref{sec:objetivos} se introduce el objetivo principal del trabajo y se enumeran los objetivos parciales que se han propuesto para conseguirlo. En la Sección \ref{sec:metodología} se hace un repaso a la metodología seguida para realizar el trabajo y finalmente, en la Sección \ref{sec:herramientas} se introducen las herramientas y bibliotecas que se han utilizado.
+En este primer capítulo se presenta la motivación que ha dado lugar a la idea y desarrollo de este TFG en la Sección \ref{sec:motivacion}. En la Sección \ref{sec:objetivos} se introduce el objetivo principal del trabajo y se enumeran los objetivos parciales que se han propuesto para conseguirlo. Por último, en la Sección \ref{sec:metodología} se hace un repaso a la metodología seguida para realizar el trabajo.
 
 \section{Motivación} \label{sec:motivacion}
 
@@ -37,9 +37,11 @@ Con el fin de desglosar el objetivo principal, y de poder corroborar o refutar n
     \item Aplicar algoritmos supervisados para distinguir animales control de animales tratados.
 \end{itemize}
 
-
 \section{Metodología} \label{sec:metodología}
+El primer paso para la realización de este trabajo fue la lectura de literatura relacionada, tanto de artículos de Neurociencia de sistemas que abordaban problemas similares, como de manuales de diseño y programación de técnicas de aprendizaje automático. Tras evaluar que métodos y herramientas utilizar, se realizó el preprocesado de los datos de los videos de las sesiones rastreando diferentes partes de los animales con DeepLabCut y filtrando e interpolando los datos obtenidos para prepararlos para el análisis. Con todo preparado, pasamos al análisis de los datos, realizando técnicas de clasificación manual, de aprendizaje no supervisado y de aprendizaje supervisado.
+
+En el laboratorio hemos seguido una metodología ágil, con numerosas iteraciones de lectura de literatura, desarrollo de código en Python, y pruebas de los métodos implementados. Cada cierto tiempo realizábamos reuniones de laboratorio para actualizar al resto de integrantes del laboratorio del estado del trabajo, recibiendo comentarios e ideas para seguir iterando.
 
 El trabajo se divide en dos capítulos principales, en el Capítulo \ref{chap:fundamentos-teoricos} abordaremos el estudio teórico de ciertos algoritmos de agrupamiento, reducción de dimensionalidad y de clasificación supervisada. Todo ello desde un punto de vista teórico con ejemplos fáciles de visualizar para ayudar al lector a comprender en profundidad los métodos.
 
-En el Capítulo \ref{chap:analisis-y-experimentacion}, desarrollaremos paso a paso el análisis real ejercido durante la estancia en el Instituto Cajal. El principal objetivo durante estos meses ha sido buscar la mejor forma de, dados una serie de videos de ratones en su caja, detectar automáticamente diferentes tipos de comportamientos. El fin último del proyecto es estudiar la posibilidad de clasificar dos grupos de animales, control y medicados, basándose en los comportamientos estereotipados.
+En el Capítulo \ref{chap:analisis-y-resultados}, desarrollaremos paso a paso el análisis real ejercido durante la estancia en el Instituto Cajal. El principal objetivo durante estos meses ha sido buscar la mejor forma de, dados una serie de videos de ratones en su caja, detectar automáticamente diferentes tipos de comportamientos. El fin último del proyecto es estudiar la posibilidad de clasificar dos grupos de animales, control y medicados, basándose en los comportamientos estereotipados.

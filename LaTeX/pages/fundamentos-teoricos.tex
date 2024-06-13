@@ -20,7 +20,7 @@ En esta sección vamos a estudiar a fondo tres tipos de algoritmos de agrupació
                   n_features=3, random_state=0)
 \end{mypython}
 
-Hemos creado un conjunto de datos sintéticos a los cuales poder aplicar todos los algoritmos que vamos a explicar para poder visualizar gráficamente sus resultados. Con la función \texttt{make\_blobs} de Scikit-learn hemos aleatorizado 100 puntos tridimensionales agrupados en cuatro clases fácilmente diferenciables. La figura \ref{fig:artificial-data} muestra una representacion gráfica del conjunto, y el Código \ref{code:artificial-data}. En la tabla \ref{tab:colab-links} está el enlace para poder ejecutar el código en el \textit{backend} de Google.
+Hemos creado un conjunto de datos sintéticos a los cuales poder aplicar todos los algoritmos que vamos a explicar para poder visualizar gráficamente sus resultados. Con la función \texttt{make\_blobs} de Scikit-learn hemos aleatorizado 100 puntos tridimensionales agrupados en cuatro clases fácilmente diferenciables. Scikit-learn es una de las bibliotecas de Python especializada en aprendizaje automático que hemos utilizado. La figura \ref{fig:artificial-data} muestra una representación gráfica del conjunto, y el Código \ref{code:artificial-data} muestra los parámetros que hemos utilizado para crearlo. En la tabla \ref{tab:colab-links} está el enlace para poder ejecutar el código en el \textit{backend} de Google.
 
 % Artificial data
 \begin{figure}[h]
@@ -43,11 +43,11 @@ Hemos creado un conjunto de datos sintéticos a los cuales poder aplicar todos l
 
 \subsection{Análisis de componentes principales}
 
-Nuestro conjunto de datos artificiales tiene únicamente 3 dimensiones, lo que hace que sea sencillo poder representarlo gráficamente y que sea fácilmente interpretable. Sin embargo, en la vida real, así como en los datos que en el Capítulo \ref{chap:analisis-y-experimentacion}, los datos tienden a tener muchas más dimensiones. Esto hace que sea un problema poder representarlos en espacios bidimensionales como este documento, y puede entorpecer también su interpretación o lectura desde otros algoritmos, ya que es probable que haya dimensiones que aporten más ruido que información a la muestra.
+Nuestro conjunto de datos artificiales tiene únicamente 3 dimensiones, lo que hace que sea sencillo poder representarlo gráficamente y que sea fácilmente interpretable. Sin embargo, en la vida real, así como en los datos que en el Capítulo \ref{chap:analisis-y-resultados}, los datos tienden a tener muchas más dimensiones. Esto hace que sea un problema poder representarlos en espacios bidimensionales como este documento, y puede entorpecer también su interpretación o lectura desde otros algoritmos, ya que es probable que haya dimensiones que aporten más ruido que información a la muestra.
 
 Una de las técnicas más utilizadas para tratar este problema es realizar un análisis de componentes principales (PCA) sobre los datos \cite{pca}. Un PCA es una transformación lineal de los datos a un nuevo sistema de coordenadas para facilitar la identificación de las direcciones que contienen más variabilidad. A estas direcciones, que consisten en una combinación lineal de las variables originales, se les denomina \textit{componentes principales}.
 
-El primer paso para realizar un PCA es normalizar los datos para que cada una de las variables originales tenga media 0 y varianza 1. Para ello, denotando $ \textbf{X} = (X_1, ..., X_n) $ a nuestros datos a analizar, donde cada $ X_i $ con $ i \in {1, ..., n} $ es una de las variables de nuestros datos, y $ \mu_{X_i} $ y $ \sigma_{X_i} $ son la media y varianza de cada una de las variables, computamos
+El primer paso para realizar un PCA es normalizar los datos para que cada una de las variables originales tenga media 0 y varianza 1. Para ello, denotando $ \textbf{X} = (X_1, ..., X_n) $ a nuestros datos a analizar, donde cada $ X_i $ con $ i \in {1, ..., n} $ es una de las variables de nuestros datos, y $ \mu_{X_i} $ y $ \sigma_{X_i} $ son la media y desviación típica de cada una de las variables, computamos
 \begin{equation}
   Z_i = \frac{X_i - \mu_{X_i}}{\sigma_{X_i}},
 \end{equation}
@@ -110,13 +110,13 @@ En la Figura \ref{fig:pca} se muestran gráficamente los puntos artificiales tra
 \newpage
 \subsection{Agrupamiento por k-medias}
 
-El algoritmo de k-medias clasifica los datos separando los datos en $ n $ grupos con la misma varianza.
+El algoritmo de k-medias clasifica los datos separando los datos en $ k $ grupos de manera que la suma de las distancias al cuadrado entre los datos y el centroide del grupo al que pertenecen sea mínima.
 
-El algoritmo comienza inicializando aleatoriamente $ n $ centroides, siendo $ n $ el número de agrupaciones que se le han dicho que realice. Estos centroides serán los centros de las agrupaciones que va a realizar, no tienen por qué pertenecer a los datos, pero sí que están contenidos en su misma dimensión. En cada iteración, el algoritmo asigna a cada punto de los datos el centroide más próximo y luego asigna a cada agrupación un nuevo centroide calculado como la media de los datos que se han asignado a dicha agrupación.
+El algoritmo comienza inicializando aleatoriamente $ k $ centroides, siendo $ k $ el número de agrupaciones que se le han dicho que realice. Estos centroides serán los centros de las agrupaciones que va a realizar, no tienen por qué pertenecer a los datos, pero sí que están contenidos en su misma dimensión. En cada iteración, el algoritmo asigna a cada punto de los datos el centroide más próximo y luego asigna a cada agrupación un nuevo centroide calculado como la media de los datos que se han asignado a dicha agrupación.
 
-El algoritmo divide un conjunto de $ n $ puntos $ x_i $ en $ j $ agrupaciones disjuntas $ C $, cada una descrita por la media $ \mu_j $ de los puntos en la agrupación. Para ello se computan los centroides que minimicen
+El algoritmo divide un conjunto de $ n $ elementos $ x_j $ en $ k $ agrupaciones disjuntas $ S_i $, cada una descrita por la media $ \mu_k $ de los puntos en la agrupación $ C_k $. Para ello se computan los centroides que 
 \begin{equation}
-  \sum\limits_{i=1}^n \underset{\mu_j \in C}{\operatorname{min}} (|| x_i - \mu_j||^2).
+  \underset{C}{\operatorname{arg min}} \sum_{i=1}^k \sum_{x_j \in C_i}  (|| x_j - \mu_i||^2).
 \end{equation}
 
 Cuando una iteración no realiza ninguna modificación de las agrupaciones generadas por los centroides de la iteración anterior, el algoritmo finaliza devolviendo las agrupaciones cradas asignando una clase a cada uno de los puntos procesados.
@@ -156,7 +156,7 @@ La Figura \ref{fig:kmeans} muestra las dos agrupaciones que se han decidido crea
 
 Al igual que el algoritmo de k-medias, el algoritmo de agrupamiento aglomerativo divide los datos dados en el número de grupos indicado. Para ello empieza asignando a cada punto un grupo diferente, para luego ir unificando los grupos en cada iteración según el criterio elegido, hasta alcanzar el número de grupos deseado. Este tipo de algoritmo pertenece a un tipo más amplio de algoritmos denominado agrupación jerárquica, donde además de los agrupamientos aglomerativos están las agrupaciones divisivas. Estas funcionan asignando a todos los puntos el mismo grupo y dividiendo este grupo en cada iteración hasta alcanzar el número deseado.
 
-Los dos tipos de agrupamiento jerárquico funcionan de forma similar, y ambos varían dependiendo de la función de distancia que se utilice, tanto para dividir como para agrupar. Vamos a profundizar en el Método de Ward, que junta los grupos que al juntarse minimicen la varianza mínima dentro del nuevo grupo. Así, la varianza de un grupo $ C $ de puntos $ \{x_1, ..., x_m\} $ se define como
+Los dos tipos de agrupamiento jerárquico funcionan de forma similar, y ambos varían dependiendo de la función de distancia que se utilice, tanto para dividir como para agrupar. Vamos a profundizar en el Método de Ward, que junta los grupos que al juntarse minimicen la varianza mínima dentro del nuevo grupo. Así, la varianza de un grupo $ C $ de puntos $ \{x_1, ..., x_n\} $ se define como
 \begin{equation}
   V(C) = \sum\limits_{i=1}^n || x_i - \mu_C ||^2,
 \end{equation}
@@ -287,9 +287,16 @@ la cual vamos a usar en las pruebas de esta sección, o el rectificador linear u
 \begin{equation}
   \varphi(z) = \operatorname{max}(0, z),
 \end{equation}
-el cual es ampliamente utilizado por sus buenos resultados en problemas generales, y hemos utilizado en la Sección \ref{sec:unsupervised} con nuestros datos reales.
+el cual es ampliamente utilizado por sus buenos resultados en problemas generales, y hemos utilizado en la Sección \ref{sec:analisis} con nuestros datos reales.
 
-Una vez definido el concepto de neurona podemos definir una red \textit{neuronal secuencial completa} como un conjunto de neuronas divididas en diferentes capas. En la primera capa, la \textit{capa de entrada}, cada neurona recibe como entrada todos los datos a procesar y manda su salida a la entrada de cada una de las neuronas de la siguiente capa. En las capas intermedias, \textit{capas ocultas}, las neuronas reciben un vector de entrada formado por las salidas de la capa anterior, y vuelven a pasar su salida a las capas posteriores. Finalmente, la última capa, la \textit{capa de salida}, recibe su entrada de la capa anterior y devuelve la salida final de la red. En función del número de neuronas de esta capa, la red podrá devolver más o menos información.
+Una vez definido el concepto de neurona podemos definir una red \textit{neuronal secuencial completa} como un conjunto de neuronas divididas en diferentes capas. En la primera capa, la \textit{capa de entrada}, cada neurona recibe como entrada todos los datos a procesar y manda su salida a la entrada de cada una de las neuronas de la siguiente capa. En las capas intermedias, \textit{capas ocultas}, las neuronas reciben un vector de entrada formado por las salidas de la capa anterior, y vuelven a pasar su salida a las capas posteriores. Finalmente, la última capa, la \textit{capa de salida}, recibe su entrada de la capa anterior y devuelve la salida final de la red. En función del número de neuronas de esta capa, la red podrá devolver más o menos información. En la Figura \ref{fig:diagram-sec} se muestra un ejemplo de una posible red neuronal secuencial.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{figures/diagram-secuential.pdf}
+  \caption{Diagrama simplificado de una red secuencial. En esta red, la capa de entrada (azul) tiene tres neuronas que reciben los datos de $ \mathbf{x} $ y tras aplicar los pesos, el sesgo y la función de activación, pasan a una capa oculta (gris). Esta capa recibe todas las salidas de la capa anterior y tras repetir el procedimiento anterior, pasa su salida a la capa de salida (verde). En este caso, tiene solo dos neuronas, definiendo el tamaño de los datos de la salida $ \mathbf{y} $ de la red.}
+  \label{fig:diagram-sec}
+\end{figure}
 
 Para clasificar datos mediante una red neuronal es necesario contar con un conjunto de datos etiquetado dividido en un conjunto de entrenamiento y otro conjunto de validación, para poder así \textit{entrenar} nuestra red y validar la calidad de su aprendizaje. Así, se empieza inicializando los valores de los pesos de la red a valores predeterminados, y luego se empiezan a propagar hacia delante los datos de entrenamiento calculando el error $ L $ cometido al clasificarlos comparando la salida de la red con el valor de su clasificación real
 \begin{equation}
@@ -358,11 +365,9 @@ model = nn.Sequential(
   nn.Linear(3, 128),
   nn.Tanh(),
   nn.Linear(128, 4))
-
 loss_fn = nn.CrossEntropyLoss()
-learning_rate = 1e-2
-optimizer = torch.optim.SGD(model.parameters(),     
-                            lr=learning_rate)
+learn_rate = 1e-2
+optimizer = torch.optim.SGD(model.parameters(), lr=learn_rate)
 n_epochs = 100
 
 for epoch in range(n_epochs):
@@ -374,8 +379,6 @@ for epoch in range(n_epochs):
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-  
-  print("Epoch: %d, Loss: %f" % (epoch, float(loss)))
 \end{mypython}
 
 % Net
@@ -403,9 +406,17 @@ for epoch in range(n_epochs):
   \label{fig:net-artificial}
 \end{figure}
 
+\newpage
 \subsection{Red neuronal convolucional}
 Para resolver problemas simples como la clasificación de los puntos artificiales con los que hemos estado trabajando, las redes neuronales secuenciales lineales como la que hemos visto funcionan perfectamente, sin embargo, a la hora de analizar datos reales no siempre consiguen los resultados que nos gustaría. Para arreglar esto se puede valorar aumentar el número de capas de la red, aumentar el tamaño de las capas, probar diferentes funciones de activación, o aumentar el número de datos de entrenamiento. Otra posible opción es probar con redes que funcionen algo diferente como, por ejemplo, las redes neuronales convolucionales.
 
 Las redes secuenciales relacionan cada punto del vector de entrada con todos los demás \texttt{asumiendo} que pueden existir relaciones entre cualquier par de puntos. Las redes convolucionales, en cambio, incorporan capas encargadas de aplicar una serie de filtros sobre los datos para asociar y dar relevancia a puntos próximos entre sí. Las redes convolucionales son ampliamente utilizadas para el análisis de imágenes, ya que es frecuente que las estructuras y características que podamos querer buscar en una imagen, estén formadas por píxeles próximos entre sí. En nuestro caso, vamos a analizar datos en series temporales, por lo que de la misma forma, es probable que las estructuras que queremos encontrar estén próximas temporalmente.
 
-No vamos a centrarnos a fondo en los detalles matemáticos de estas redes, pero en la Sección \ref{sec:unsupervised} vamos a implementar una red convolucional a medida para nuestros datos de laboratorio utilizando PyTorch.
+\begin{figure}[h]
+  \centering
+  \includegraphics{figures/diagram-convolutional.pdf}
+  \caption{Diagrama simplificado de una red convolucional. Partiendo de la red secuencial de la Figura \ref{fig:diagram-sec} se han modificado las capas por capas convolucionales. De esta forma, cada una de las neuronas solo pasa información a neuronas cercanas, relacionando los datos próximos de $ \mathbf{x} $.}
+  \label{fig:diagram-conv}
+\end{figure}
+
+La Figura \ref{fig:diagram-conv} muestra una red convolucional simplificada construida a partir de la estructura de la red secuencial vista previamente. No vamos a centrarnos a fondo en los detalles matemáticos de estas redes, pero en la Sección \ref{sec:analisis} vamos a implementar una red convolucional a medida para nuestros datos de laboratorio utilizando PyTorch.
