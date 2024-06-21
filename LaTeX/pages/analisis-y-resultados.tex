@@ -3,12 +3,12 @@
 
 Una vez adquiridos los conocimientos teóricos necesarios, y comprendido el funcionamiento de los diferentes algoritmos que vamos a utilizar, estamos en disposición de aplicarlos a los datos de experimentación y comprobar la eficacia de los algoritmos en un caso real. Este capítulo aborda el trabajo realizado durante tres meses en el Instituto Cajal, aplicando diferentes técnicas para tratar de agrupar los comportamientos de los animales, y de diferenciar animales bajo efectos de tratamiento o de placebo.
 
-En la Sección \ref{sec:herramientas} describimos brevemente las herramientas que hemos utilizado para realizar el trabajo. En la Sección \ref{sec:preprocesado} tratamos el proceso de como hemos preprocesado los vídeos para homogeneizar todas las sesiones de experimentación, obtener los datos de posición de los animales en ellas y filtrar e interpolar los datos poco verosímiles. En la Sección \ref{sec:análisis} desarrollamos el proceso de análisis de los datos preprocesados aplicando los diferentes algoritmos vistos anteriormente y analizando sus resultados.
+En la Sección \ref{sec:herramientas} describimos brevemente las herramientas que hemos utilizado para realizar el trabajo. En la Sección \ref{sec:preprocesado} tratamos el proceso de como hemos preprocesado los vídeos para homogeneizar todas las sesiones de experimentación, obtener los datos de posición de los animales en ellas y filtrar e interpolar los datos poco verosímiles. En la Sección \ref{sec:analisis} desarrollamos el proceso de análisis de los datos preprocesados aplicando los diferentes algoritmos vistos anteriormente y analizando sus resultados.
 
 \section{Bibliotecas y herramientas utilizadas} \label{sec:herramientas}
-En esta sección describimos brevemente las diferentes bibliotecas de Python que hemos usado desarrollo del código del trabajo, además de comentar el entorno de trabajo que hemos utilizado para poder realizar computación en la nube.
+En esta sección describimos brevemente las diferentes bibliotecas de Python que hemos usado para el desarrollo del código del trabajo, además de comentar el entorno de trabajo que hemos utilizado para poder realizar computación en la nube.
 \subsection*{DeepLabCut}
-DeepLabCut \cite{deeplabcut} es una herramienta para la estimación 2D y 3D sin marcadores mediante el uso de redes neuronales. Es capaz de identificar de rastrear diferentes partes del cuerpo de múltiples especies realizando todo tipo de comportamientos. Esta ha sido la base de todo nuestro trabajo, ya que todos los vídeos que hemos analizado han sido procesados en primer lugar por DeepLabCut para rastrear las posiciones de múltiples puntos de los animales a lo largo de los vídeos de las sesiones. Debido a su importancia, damos una explicación más en detalle de su funcionamiento y de como lo hemos utilizado en la sección \ref{sec:DeepLabCut}.
+DeepLabCut \cite{deeplabcut} es una herramienta para la estimación de la posición de animales sin marcadores mediante el uso de redes neuronales. Es capaz de identificar de rastrear diferentes partes del cuerpo de múltiples especies realizando todo tipo de comportamientos. Esta ha sido la base de todo nuestro trabajo, ya que todos los vídeos que hemos analizado han sido procesados en primer lugar por DeepLabCut para rastrear las posiciones de múltiples puntos de los animales a lo largo de los vídeos de las sesiones. Debido a su importancia, damos una explicación más en detalle de su funcionamiento y de como lo hemos utilizado en la sección \ref{sec:DeepLabCut}.
 
 \subsection*{Google Colab}
 Google Colab es una herramienta para realizar cuadernos de Jupyter en línea, y poder ejecutarlos en el \textit{backend} de Google. Estos son documentos que intercalan fragmentos de texto con fragmentos de código ejecutable en Python, así como la salida de las distintas ejecuciones. Todo el codigo realizado para este trabajo ha sido realizado en cuadernos de Colab, y puede ser consultado en los siguientes enlaces:
@@ -18,14 +18,13 @@ Google Colab es una herramienta para realizar cuadernos de Jupyter en línea, y 
     \centering
     \begin{tabular}{|c|p{10cm}|}
         \hline
-        \textbf{Ejemplos teóricos} & \href{https://colab.research.google.com/drive/
-        1qLLQTCFLZcqExN7qyYyRAT1nm7P8NhuK?usp=sharing}{https://colab.research.google.com/drive/ 1qLLQTCFLZcqExN7qyYyRAT1nm7P8NhuK?usp=sharing} \\
+        \textbf{Ejemplos teóricos} & \href{https://colab.research.google.com/drive/1qLLQTCFLZcqExN7qyYyRAT1nm7P8NhuK?usp=sharing}{https://colab.research.google.com/drive/
+        1qLLQTCFLZcqExN7qyYyRAT1nm7P8NhuK?usp=sharing} \\
         \hline
         \textbf{DeepLabCut} & \href{https://colab.research.google.com/drive/1dFbmUcfW9el50v0RBCkLIItTD6SF7A3x?usp=sharing}{https://colab.research.google.com/drive/
         1dFbmUcfW9el50v0RBCkLIItTD6SF7A3x?usp=sharing} \\
         \hline
-        \textbf{Análisis principal} & \href{https://colab.research.google.com/drive/
-        1ak2VpDi-zTnV-uEDp-viEkpa8GFDGuBR?usp=sharing}{https://colab.research.google.com/drive/ 1ak2VpDi-zTnV-uEDp-viEkpa8GFDGuBR?usp=sharing} \\
+        \textbf{Análisis principal} & \href{https://colab.research.google.com/drive/1ak2VpDi-zTnV-uEDp-viEkpa8GFDGuBR?usp=sharing}{https://colab.research.google.com/drive/1ak2VpDi-zTnV-uEDp-viEkpa8GFDGuBR?usp=sharing} \\
         \hline
     \end{tabular}
     \caption{Enlaces a cuadernos de Google Colab.}
@@ -42,14 +41,14 @@ Pandas es una biblioteca de manejo de datos mediante tablas denominadas \texttt{
 NumPy es una de las bibliotecas principales de cálculo científico en Python. Proporciona un objeto de \texttt{array} multidimensional y numerosas funciones estadísticas y algebraicas de mucha utilidad.
 
 \subsection*{PyTorch}
-PyTorch \cite{pytorch-paper} es una biblioteca de Python desarrollada por Facebook para la implementación de redes neuronales. Incluye multitud de módulos que facilitan la creación de redes neuronales a medida y varios optimizadores para acelerar el proceso de entrenamiento. Además, proporciona el objeto \texttt{Tensor} similar al \texttt{array} de NumPy, pero optimizado para el cómputo en procesadores gráficos. Hemos utilizado todas estas herramientas para implementar una red neuronal para analizar nuestros datos de laboratório.
+PyTorch \cite{pytorch-paper} es una biblioteca de Python desarrollada por Facebook para la implementación de redes neuronales. Incluye multitud de módulos que facilitan la creación de redes neuronales a medida y varios optimizadores para acelerar el proceso de entrenamiento. Además, proporciona el objeto \texttt{Tensor} similar al \texttt{array} de NumPy, pero optimizado para el cómputo en procesadores gráficos. Hemos utilizado todas estas herramientas para implementar una red neuronal para analizar nuestros datos de laboratorio.
 
 \subsection*{Matplotlib}
 Matplotlib es una biblioteca para crear figuras en Python. Todas las figuras de representación de datos que aparecen en este trabajo han sido creadas con \texttt{matplotlib}. El código concreto utilizado para generarlas puede consultarse en los cuadernos de Colab.
 
 \section{Preprocesado de datos} \label{sec:preprocesado}
 
-Los datos de los que hemos partido para realizar el análisis han sido 88 pares de vídeos en blanco y negro, de cinco minutos cada uno, de ratones en su caja habitad sin estar realizando ninguna tarea concreta. Cada par de vídeos consistía en un video de la vista cenital de la caja y otro de la vista lateral, como se puede observar en la Figura \ref{fig:deeplabcut-outputexamples}. Además, de cada par de vídeos teníamos el código del animal que estaba siendo grabado, la fecha de la sesión y si el animal estaba bajo los efectos del tratamiento de NMDA en dicha fecha o no. Mostramos un resumen de estos datos en la Tabla \ref{tab:animal-info}.
+Los datos de los que hemos partido para realizar el análisis han sido 88 pares de vídeos en blanco y negro, de cinco minutos cada uno, de ratones en su caja hábitat sin estar realizando ninguna tarea concreta. Cada par de vídeos consistía en un video de la vista cenital de la caja y otro de la vista lateral, como se puede observar en la Figura \ref{fig:deeplabcut-outputexamples}. Además, de cada par de vídeos teníamos el código del animal que estaba siendo grabado, la fecha de la sesión y si el animal estaba bajo los efectos del tratamiento de NMDA en dicha fecha o no. Mostramos un resumen de estos datos en la Tabla \ref{tab:animal-info}.
 
 % Animal info
 \begin{table}[h]
@@ -113,7 +112,7 @@ DeepLabCut es una red convolucional profunda que combina redes residuales pre en
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.9\textwidth]{figures/diagram-dlc.pdf}
-  \caption{Diagrama simplificado de la red utilizada por DeepLabCut. La red recibe como entrada los datos de los fotogramas con las partes etiquetadas y los procesa por múltiples capas convolucionales pre entrenadas con ImageNet. Finalmente, las salidas de esas capas pasan por capas deconvolucionales para obtener el fichero con las predicciones de coordenadas.}
+  \caption[Diagrama simplificado de la red utilizada por DeepLabCut.]{Diagrama simplificado de la red utilizada por DeepLabCut. La red recibe como entrada los datos de los fotogramas con las partes etiquetadas y los procesa por múltiples capas convolucionales pre entrenadas con ImageNet. Finalmente, las salidas de esas capas pasan por capas deconvolucionales para obtener el fichero con las predicciones de coordenadas.}
   \label{fig:diagram-dlc}
 \end{figure}
 
@@ -368,7 +367,7 @@ En el Código \ref{code:convolutional} podemos ver la implementación en PyTorch
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.9\textwidth]{figures/diagram-conv-lab.pdf}
-  \caption{Diagrama de la red utilizada para analizar nuestros datos. La red recibe como entrada datos con 300 instantes temporales de 52 canales cada uno. Estos pasan a la siguiente capa duplicando los canales y a la tercera recudiéndose a 26. En las capas convolucionales, se usa un núcleo de tamaño 20, por lo que cada dato procesado solo tiene encuentra intervalos de 20 fotogramas próximos entre sí.}
+  \caption[Diagrama de la red utilizada para analizar nuestros datos.]{Diagrama de la red utilizada para analizar nuestros datos. La red recibe como entrada datos con 300 instantes temporales de 52 canales cada uno. Estos pasan a la siguiente capa duplicando los canales y a la tercera redudiéndose a 26. En las capas convolucionales, se usa un núcleo de tamaño 20, por lo que cada dato procesado solo tiene encuentra intervalos de 20 fotogramas próximos entre sí.}
   \label{fig:diagram-conv-lab}
 \end{figure}
 

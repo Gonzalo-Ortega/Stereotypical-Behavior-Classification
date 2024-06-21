@@ -17,7 +17,7 @@ En esta sección vamos a estudiar a fondo tres tipos de algoritmos de agrupació
   from sklearn.datasets import make_blobs
 
   X, y = make_blobs(n_samples=100, centers=4,
-                  n_features=3, random_state=0)
+  n_features=3, random_state=0)
 \end{mypython}
 
 Hemos creado un conjunto de datos sintéticos a los cuales poder aplicar todos los algoritmos que vamos a explicar para poder visualizar gráficamente sus resultados. Con la función \texttt{make\_blobs} de Scikit-learn hemos aleatorizado 100 puntos tridimensionales agrupados en cuatro clases fácilmente diferenciables. Scikit-learn es una de las bibliotecas de Python especializada en aprendizaje automático que hemos utilizado. La figura \ref{fig:artificial-data} muestra una representación gráfica del conjunto, y el Código \ref{code:artificial-data} muestra los parámetros que hemos utilizado para crearlo. En la tabla \ref{tab:colab-links} está el enlace para poder ejecutar el código en el \textit{backend} de Google.
@@ -70,7 +70,7 @@ para $ i, j \in {1, ..., n} $ siendo $ E $ el operador media. Acto seguido, calc
   \Sigma \textbf{v} = \lambda \textbf{v}.
 \end{equation}
 
-Los autovectores $ \textbf{v} $ se denominan componentes principales, y ordenándolos en orden decreciente según el valor de su autovalor $ \lambda $ asociado, obtenemos la lista de componentes principales deseada. Finalmente basta con quedarse con el numero deseado de componentes de la parte superior de la lista para reducir la dimensionalidad de nuestros datos maximizando la covarianza de los mismos. En el Código \ref{code:pca} hemos realizado un PCA de nuestros datos artificiales conservando las 3 componentes principales. Hemos utilizado la clase \texttt{PCA} de Scikit-learn, que encapsula todo el procedimiento que hemos explicado. 
+Los autovectores $ \textbf{v} $ se denominan componentes principales, y ordenándolos en orden decreciente según el valor de su autovalor $ \lambda $ asociado, obtenemos la lista de componentes principales deseada. Finalmente basta con quedarse con el numero deseado de componentes de la parte superior de la lista para reducir la dimensionalidad de nuestros datos maximizando la covarianza de los mismos. En el Código \ref{code:pca} hemos realizado un PCA de nuestros datos artificiales conservando las 3 componentes principales. Hemos utilizado la clase \texttt{PCA} de Scikit-learn, que encapsula todo el procedimiento que hemos explicado.
 
 \begin{mypython}[float={h}, caption={Realizar un PCA.}, label={code:pca}]
   from sklearn.decomposition import PCA
@@ -114,12 +114,12 @@ El algoritmo de k-medias clasifica los datos separando los datos en $ k $ grupos
 
 El algoritmo comienza inicializando aleatoriamente $ k $ centroides, siendo $ k $ el número de agrupaciones que se le han dicho que realice. Estos centroides serán los centros de las agrupaciones que va a realizar, no tienen por qué pertenecer a los datos, pero sí que están contenidos en su misma dimensión. En cada iteración, el algoritmo asigna a cada punto de los datos el centroide más próximo y luego asigna a cada agrupación un nuevo centroide calculado como la media de los datos que se han asignado a dicha agrupación.
 
-El algoritmo divide un conjunto de $ n $ elementos $ x_j $ en $ k $ agrupaciones disjuntas $ S_i $, cada una descrita por la media $ \mu_k $ de los puntos en la agrupación $ C_k $. Para ello se computan los centroides que 
+El algoritmo divide un conjunto de $ n $ elementos $ x_j $ en $ k $ agrupaciones disjuntas $ C_i $, cada una descrita por la media $ \mu_i $ de los puntos en la agrupación. Para ello se computan los centroides que
 \begin{equation}
   \underset{C}{\operatorname{arg min}} \sum_{i=1}^k \sum_{x_j \in C_i}  (|| x_j - \mu_i||^2).
 \end{equation}
 
-Cuando una iteración no realiza ninguna modificación de las agrupaciones generadas por los centroides de la iteración anterior, el algoritmo finaliza devolviendo las agrupaciones cradas asignando una clase a cada uno de los puntos procesados.
+Cuando una iteración no realiza ninguna modificación de las agrupaciones generadas por los centroides de la iteración anterior, el algoritmo finaliza devolviendo las agrupaciones creadas asignando una clase a cada uno de los puntos procesados.
 
 Para computar el algoritmo sobre nuestros datos artificiales hemos utilizado el Código \ref{code:kmeans} usando la clase \texttt{KMeans} de Scikit-learn. Hemos iniciado al algoritmo que separe los datos en dos clases, iniciando los centroides de forma automática. Con esto queremos ver como actúa un algoritmo dividiendo un conjunto de datos generado con 4 clases en mente, cuando se le fuerza a separar únicamente dos grupos.
 
@@ -156,7 +156,7 @@ La Figura \ref{fig:kmeans} muestra las dos agrupaciones que se han decidido crea
 
 Al igual que el algoritmo de k-medias, el algoritmo de agrupamiento aglomerativo divide los datos dados en el número de grupos indicado. Para ello empieza asignando a cada punto un grupo diferente, para luego ir unificando los grupos en cada iteración según el criterio elegido, hasta alcanzar el número de grupos deseado. Este tipo de algoritmo pertenece a un tipo más amplio de algoritmos denominado agrupación jerárquica, donde además de los agrupamientos aglomerativos están las agrupaciones divisivas. Estas funcionan asignando a todos los puntos el mismo grupo y dividiendo este grupo en cada iteración hasta alcanzar el número deseado.
 
-Los dos tipos de agrupamiento jerárquico funcionan de forma similar, y ambos varían dependiendo de la función de distancia que se utilice, tanto para dividir como para agrupar. Vamos a profundizar en el Método de Ward, que junta los grupos que al juntarse minimicen la varianza mínima dentro del nuevo grupo. Así, la varianza de un grupo $ C $ de puntos $ \{x_1, ..., x_n\} $ se define como
+Los dos tipos de agrupamiento jerárquico funcionan de forma similar, y ambos varían dependiendo de la función de distancia que se utilice, tanto para dividir como para agrupar. Vamos a profundizar en el Método de Ward, que junta los grupos que minimicen la varianza mínima dentro del nuevo grupo. Así, la varianza de un grupo $ C $ de puntos $ \{x_1, ..., x_n\} $ se define como
 \begin{equation}
   V(C) = \sum\limits_{i=1}^n || x_i - \mu_C ||^2,
 \end{equation}
@@ -177,7 +177,7 @@ Tras ello, unifica los dos grupos que supongan un menor incremento en la varianz
   agg_assigment = agg.fit_predict(X)
 \end{mypython}
 
-En el Código \ref{code:agglomerative} hemos realizado un agrupamiento aglomerado sobre nuestros puntos artificiales utilizando la clase \texttt{AgglomerativeClustering} de Scikit-learn, que por defecto, si no se le indica lo contrario, utiliza el Método de Ward en la ejecución del algoritmo. En la Figura \ref{fig:agglomerative} se muestran los resultados sobre nuestros datos de forma gráfica.
+En el Código \ref{code:agglomerative} hemos realizado un agrupamiento aglomerativo sobre nuestros puntos artificiales utilizando la clase \texttt{AgglomerativeClustering} de Scikit-learn, que por defecto, si no se le indica lo contrario, utiliza el Método de Ward en la ejecución del algoritmo. En la Figura \ref{fig:agglomerative} se muestran los resultados sobre nuestros datos de forma gráfica.
 
 % Agglomerative
 \begin{figure}[h]
@@ -194,14 +194,14 @@ En el Código \ref{code:agglomerative} hemos realizado un agrupamiento aglomerad
     \caption{}
     \label{fig:agg-pca}
   \end{subfigure}
-  \caption[Prueba del algoritmo de agrupamiento aglomerado.]{Prueba del algoritmo de agrupamiento aglomerado. \ref{fig:agg-3d} Visualización sobre los datos sin modificar de los grupos que ha realizado el algoritmo. \ref{fig:agg-pca} Visualización de los grupos realizados sobre los datos procesados por el PCA.}
+  \caption[Prueba del algoritmo de agrupamiento aglomerativo.]{Prueba del algoritmo de agrupamiento aglomerativo. \ref{fig:agg-3d} Visualización sobre los datos sin modificar de los grupos que ha realizado el algoritmo. \ref{fig:agg-pca} Visualización de los grupos realizados sobre los datos procesados por el PCA.}
   \label{fig:agglomerative}
 \end{figure}
 
 \newpage
 \subsection{Agrupamiento por propagación de afinidad}
 
-El algoritmo de propagación de afinidad \cite{affinity} crea agrupaciones mandando mensajes entre pares de puntos hasta que converge. La principal cualidad de este algoritmo es que, a diferencia con la mayoría de algoritmos de agrupamiento, no necesita saber el número de agrupaciones a realizar de antemano, sino que las genera dinámicamente. Consigue esto ya que, a diferencia de algoritmos como el agrupamiento por k-medias, que inicializa tantos centroides como grupos se quieran obtener, el algoritmo de propagación de afinidad empieza considerando como posibles centroides a todos los puntos de la muestra.
+El algoritmo de propagación de afinidad \cite{affinity} crea agrupaciones mandando mensajes entre pares de puntos hasta que converge. La principal cualidad de este algoritmo es que, a diferencia de la mayoría de algoritmos de agrupamiento, no necesita saber el número de agrupaciones a realizar de antemano, sino que las genera dinámicamente. Consigue esto ya que inicializa tantos centroides como grupos se quieran obtener, el algoritmo de propagación de afinidad empieza considerando como posibles centroides a todos los puntos de la muestra.
 
 Para ello, el algoritmo se inicializa con una matriz de afinidad $ S $, formada por los valores de afinidad $ s(i, k) $ que indican lo apropiado que sería escoger el dato $ k $ como ejemplar del dato $ i $. Esta matriz puede inicializarse de multitud de formas, pero por defecto se utiliza el negativo de la distancia Euclídea al cuadrado. Con ella, para los puntos $ x_i $, $ x_k $, se tendría
 \begin{equation}
@@ -265,7 +265,7 @@ Al contrario que los métodos de aprendizaje automático no supervisados, donde 
 
 En el laboratorio contamos con datos de sesiones etiquetadas con el estado del tratamiento de los animales, por lo que pueden servir para entrenar un método supervisado. En esta sección, contamos con los datos artificiales que hemos generado, en los cuales cada punto tiene asignado uno de cuatro grupos diferentes.
 
-Existen multitud de métodos no supervisados, sin embargo vamos a centrarnos únicamente en el que más está siendo utilizado a día de hoy, dando buenos resultados en múltiples disciplinas para todo tipo de problemas: las redes neuronales. En esta sección vamos a introducir primero el ejemplo fundamental de redes neuronales, las redes neuronales secuenciales, para luego hablar de las redes neuronales convolucionales, que serán las que finalmente apliquemos a nuestros datos reales. Los ejemplos y explicaciones se basan en los de \cite{understanding} y \cite{pytorch}.
+Existen multitud de métodos no supervisados, sin embargo vamos a centrarnos únicamente en el que más está siendo utilizado a día de hoy, dando buenos resultados en múltiples disciplinas para todo tipo de problemas: las redes neuronales. En esta sección vamos a introducir primero el ejemplo fundamental de redes neuronales, las redes neuronales secuenciales, para luego hablar de las redes neuronales convolucionales, que serán las que finalmente apliquemos a nuestros datos reales. Los ejemplos y explicaciones se basan en los de S. J. Prince \cite{understanding} y E. Stevens et. al \cite{pytorch}.
 
 \subsection{Red neuronal secuencial}
 
@@ -294,11 +294,11 @@ Una vez definido el concepto de neurona podemos definir una red \textit{neuronal
 \begin{figure}[h]
   \centering
   \includegraphics{figures/diagram-secuential.pdf}
-  \caption{Diagrama simplificado de una red secuencial. En esta red, la capa de entrada (azul) tiene tres neuronas que reciben los datos de $ \mathbf{x} $ y tras aplicar los pesos, el sesgo y la función de activación, pasan a una capa oculta (gris). Esta capa recibe todas las salidas de la capa anterior y tras repetir el procedimiento anterior, pasa su salida a la capa de salida (verde). En este caso, tiene solo dos neuronas, definiendo el tamaño de los datos de la salida $ \mathbf{y} $ de la red.}
+  \caption[Diagrama simplificado de una red secuencial.]{Diagrama simplificado de una red secuencial. En esta red, la capa de entrada (azul) tiene tres neuronas que reciben los datos de $ \mathbf{x} $ y tras aplicar los pesos, el sesgo y la función de activación, pasan a una capa oculta (gris). Esta capa recibe todas las salidas de la capa anterior y tras repetir el procedimiento anterior, pasa su salida a la capa de salida (verde). En este caso, tiene solo dos neuronas, definiendo el tamaño de los datos de la salida $ \mathbf{y} $ de la red.}
   \label{fig:diagram-sec}
 \end{figure}
 
-Para clasificar datos mediante una red neuronal es necesario contar con un conjunto de datos etiquetado dividido en un conjunto de entrenamiento y otro conjunto de validación, para poder así \textit{entrenar} nuestra red y validar la calidad de su aprendizaje. Así, se empieza inicializando los valores de los pesos de la red a valores predeterminados, y luego se empiezan a propagar hacia delante los datos de entrenamiento calculando el error $ L $ cometido al clasificarlos comparando la salida de la red con el valor de su clasificación real
+Para clasificar datos mediante una red neuronal es necesario contar con un conjunto de datos etiquetado dividido en un subconjunto de entrenamiento y otro subconjunto de validación, para poder así \textit{entrenar} nuestra red y validar la calidad de su aprendizaje. Así, se empieza inicializando los valores de los pesos de la red a valores predeterminados, y luego se empiezan a propagar hacia delante los datos de entrenamiento calculando el error $ L $ cometido al clasificarlos comparando la salida de la red con el valor de su clasificación real
 \begin{equation}
   L = \frac{1}{m} \sum_{i=1}^{m}(y_i - \hat{y}_i)^2,
 \end{equation}
@@ -310,46 +310,46 @@ El siguiente paso es propagar el error hacia detrás calculando el error relativ
 \end{equation}
 Este proceso se repite hasta obtener un error aceptable y dar por concluido el entrenamiento de la red. Después, se comprueba su eficacia y su capacidad de aprendizaje y adaptación a casos nuevos verificando su comportamiento con los datos reservados para la validación.
 
-Para implementar una red neuronal de estas características utilizando PyTorch, en el Código \ref{code:dataset} hemos creado una clase heredada del objeto \texttt{Dataset} de PyTorch, en la cual almacenamos nuestros datos y sus respectivas clases a la vez, accediendo a los datos en formato de \texttt{tensor}, el tipo de dato de PyTorch optimizado para operaciones en GPU.
+Para implementar una red neuronal de estas características utilizando PyTorch, en el Código \ref{code:test-dataset} hemos creado una clase heredada del objeto \texttt{Dataset} de PyTorch, en la cual almacenamos nuestros datos y sus respectivas clases a la vez, accediendo a los datos en formato de \texttt{tensor}, el tipo de dato de PyTorch optimizado para operaciones en GPU.
 
-\begin{mypython}[float={h}, caption={\texttt{Dataset} de los datos artificiales.}, label={code:dataset}]
-from torchvision import torch
-from torch.utils.data import Dataset
+\begin{mypython}[float={h}, caption={\texttt{Dataset} de los datos artificiales.}, label={code:test-dataset}]
+  from torchvision import torch
+  from torch.utils.data import Dataset
 
-class RawDataset(Dataset):
+  class RawDataset(Dataset):
   def __init__(self, arr, labels):
-      self.data = arr
-      self.labels = labels
+  self.data = arr
+  self.labels = labels
 
   def __len__(self):
-      return len(self.data)
+  return len(self.data)
 
   def __getitem__(self, idx):
-      data = self.data[idx]
-      label = self.labels[idx]
-      return torch.tensor(data, dtype=torch.float), label
+  data = self.data[idx]
+  label = self.labels[idx]
+  return torch.tensor(data, dtype=torch.float), label
 
-dataset = RawDataset(X, y)
+  dataset = RawDataset(X, y)
 \end{mypython}
 
 Para inicializar nuestros datos de entrenamiento y validación, en el Código \ref{code:train-val-data} utilizamos la función \texttt{random\_split}, que se encarga de distribuir nuestros puntos de forma aleatoria en los distintos subconjuntos. Además, fijamos el tamaño de los lotes que vamos a pasar a la red durante el entrenamiento, antes de actualizar los parámetros minimizando la función de pérdida, e inicializamos dos \texttt{DataLoader} que se encargaran de seleccionar aleatoriamente y en el tamaño de lote seleccionado, datos para pasar a la red tanto en el entrenamiento como en la validación.
 
 \begin{mypython}[float={h}, caption={Inicialización de los conjuntos de entrenamiento y validación.}, label={code:train-val-data}]
-from torch.utils.data import DataLoader, random_split
+  from torch.utils.data import DataLoader, random_split
 
-train_size = int(0.8 * len(dataset))
-test_size = len(dataset) - train_size 
+  train_size = int(0.8 * len(dataset))
+  test_size = len(dataset) - train_size
 
-train_dataset, test_dataset = \
+  train_dataset, test_dataset = \
   random_split(dataset, [train_size, test_size])
 
-batch_size = 3
-train_loader = DataLoader(train_dataset,
-                          batch_size=batch_size,
-                          shuffle=True)
-test_loader = DataLoader(test_dataset,
-                         batch_size=batch_size, 
-                         shuffle=False)
+  batch_size = 3
+  train_loader = DataLoader(train_dataset,
+  batch_size=batch_size,
+  shuffle=True)
+  test_loader = DataLoader(test_dataset,
+  batch_size=batch_size,
+  shuffle=False)
 \end{mypython}
 
 Finalmente, en el Código \ref{code:model} inicializamos nuestra red con dos capas lineales y una función de activación \texttt{Tanh} entre medias. La primera capa tiene 3 entradas, una por cada variable de los puntos artificiales y un número arbitrario de 128 salidas. Tras pasar por la función de activación, la segunda capa recibe esas 128 salidas de la capa anterior como sus entradas y saca 4 salidas, una por cada grupo que queremos distinguir.
@@ -359,26 +359,26 @@ Posteriormente se escogen una función de pérdida y un optimizador de entre los
 Una vez todos los componentes están listos, se itera en el bucle principal tantas veces como se desee ejecutando los pasos de entrenamiento explicados previamente. En la Figura \ref{fig:net-artificial} se observan los resultados de la validación, observando que esta red básica es suficiente para clasificar todos los dato de validación correctamente.
 
 \begin{mypython}[float={h}, caption={Modelo de la red y enrenamiento con los datos artificiales.}, label={code:model}]
-import torch.nn as nn
+  import torch.nn as nn
 
-model = nn.Sequential(
+  model = nn.Sequential(
   nn.Linear(3, 128),
   nn.Tanh(),
   nn.Linear(128, 4))
-loss_fn = nn.CrossEntropyLoss()
-learn_rate = 1e-2
-optimizer = torch.optim.SGD(model.parameters(), lr=learn_rate)
-n_epochs = 100
+  loss_fn = nn.CrossEntropyLoss()
+  learn_rate = 1e-2
+  optimizer = torch.optim.SGD(model.parameters(), lr=learn_rate)
+  n_epochs = 100
 
-for epoch in range(n_epochs):
+  for epoch in range(n_epochs):
   for sessions, labels in train_loader:
-    batch_size = sessions.shape[0]
-    outputs = model(sessions.view(batch_size, -1))
+  batch_size = sessions.shape[0]
+  outputs = model(sessions.view(batch_size, -1))
 
-    loss = loss_fn(outputs, labels)
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+  loss = loss_fn(outputs, labels)
+  optimizer.zero_grad()
+  loss.backward()
+  optimizer.step()
 \end{mypython}
 
 % Net
@@ -412,11 +412,4 @@ Para resolver problemas simples como la clasificación de los puntos artificiale
 
 Las redes secuenciales relacionan cada punto del vector de entrada con todos los demás \texttt{asumiendo} que pueden existir relaciones entre cualquier par de puntos. Las redes convolucionales, en cambio, incorporan capas encargadas de aplicar una serie de filtros sobre los datos para asociar y dar relevancia a puntos próximos entre sí. Las redes convolucionales son ampliamente utilizadas para el análisis de imágenes, ya que es frecuente que las estructuras y características que podamos querer buscar en una imagen, estén formadas por píxeles próximos entre sí. En nuestro caso, vamos a analizar datos en series temporales, por lo que de la misma forma, es probable que las estructuras que queremos encontrar estén próximas temporalmente.
 
-\begin{figure}[h]
-  \centering
-  \includegraphics{figures/diagram-convolutional.pdf}
-  \caption{Diagrama simplificado de una red convolucional. Partiendo de la red secuencial de la Figura \ref{fig:diagram-sec} se han modificado las capas por capas convolucionales. De esta forma, cada una de las neuronas solo pasa información a neuronas cercanas, relacionando los datos próximos de $ \mathbf{x} $.}
-  \label{fig:diagram-conv}
-\end{figure}
-
-La Figura \ref{fig:diagram-conv} muestra una red convolucional simplificada construida a partir de la estructura de la red secuencial vista previamente. No vamos a centrarnos a fondo en los detalles matemáticos de estas redes, pero en la Sección \ref{sec:analisis} vamos a implementar una red convolucional a medida para nuestros datos de laboratorio utilizando PyTorch.
+No vamos a centrarnos a fondo en los detalles matemáticos de estas redes, pero en la Sección \ref{sec:analisis} vamos a implementar una red convolucional a medida para nuestros datos de laboratorio utilizando PyTorch.
